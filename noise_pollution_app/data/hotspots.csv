@@ -1,0 +1,13 @@
+hotspot_id,zone_id,time_window,severity_score,rationale
+H01,Z01,morning,93,High noise in morning due to events
+H02,Z02,evening,67,High noise in evening due to events
+H03,Z03,afternoon,63,High noise in afternoon due to events
+H04,Z04,evening,87,High noise in evening due to events
+H05,Z05,morning,56,High noise in morning due to traffic
+H06,Z06,morning,100,High noise in morning due to traffic
+H07,Z07,morning,84,High noise in morning due to events
+H08,Z08,night,75,High noise in night due to traffic
+H09,Z09,evening,53,High noise in evening due to events
+H10,Z10,afternoon,65,High noise in afternoon due to traffic
+H11,Z11,morning,73,High noise in morning due to traffic
+H12,Z12,night,70,High noise in night due to traffic
