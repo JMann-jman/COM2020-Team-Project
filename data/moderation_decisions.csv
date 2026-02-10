@@ -1,0 +1,331 @@
+decision_id,report_id,decision,reason,timestamp
+MOD00001,REP00567,valid,consistent with sensor trend,2025-10-16T19:00:00Z
+MOD00002,REP00145,duplicate,same zone+category+time window,2025-11-25T20:00:00Z
+MOD00003,REP00637,valid,clear description,2025-10-31T21:00:00Z
+MOD00004,REP00565,invalid,insufficient detail,2025-10-07T00:00:00Z
+MOD00005,REP00635,valid,clear description,2025-10-28T04:00:00Z
+MOD00006,REP00487,valid,multiple reports corroborate,2025-10-04T18:00:00Z
+MOD00007,REP00349,valid,clear description,2025-11-20T19:00:00Z
+MOD00008,REP00338,valid,multiple reports corroborate,2025-11-27T22:00:00Z
+MOD00009,REP00456,duplicate,near-identical timestamp cluster,2025-11-10T04:00:00Z
+MOD00010,REP00417,valid,clear description,2025-10-30T12:00:00Z
+MOD00011,REP00425,duplicate,near-identical timestamp cluster,2025-11-18T21:00:00Z
+MOD00012,REP00571,valid,consistent with sensor trend,2025-10-10T22:00:00Z
+MOD00013,REP00643,valid,consistent with sensor trend,2025-10-27T04:00:00Z
+MOD00014,REP00110,valid,consistent with sensor trend,2025-11-15T13:00:00Z
+MOD00015,REP00144,duplicate,matches existing open report,2025-11-22T14:00:00Z
+MOD00016,REP00332,valid,consistent with sensor trend,2025-11-19T17:00:00Z
+MOD00017,REP00598,valid,clear description,2025-11-04T05:00:00Z
+MOD00018,REP00290,duplicate,same zone+category+time window,2025-10-23T01:00:00Z
+MOD00019,REP00031,valid,multiple reports corroborate,2025-10-13T19:00:00Z
+MOD00020,REP00476,valid,clear description,2025-11-17T17:00:00Z
+MOD00021,REP00119,valid,clear description,2025-11-10T04:00:00Z
+MOD00022,REP00123,valid,multiple reports corroborate,2025-10-05T00:00:00Z
+MOD00023,REP00623,valid,multiple reports corroborate,2025-11-23T06:00:00Z
+MOD00024,REP00132,duplicate,same zone+category+time window,2025-10-08T19:00:00Z
+MOD00025,REP00235,duplicate,near-identical timestamp cluster,2025-11-24T02:00:00Z
+MOD00026,REP00302,valid,multiple reports corroborate,2025-10-03T16:00:00Z
+MOD00027,REP00588,invalid,out of scope,2025-11-13T12:00:00Z
+MOD00028,REP00282,valid,multiple reports corroborate,2025-11-24T12:00:00Z
+MOD00029,REP00320,valid,consistent with sensor trend,2025-11-17T10:00:00Z
+MOD00030,REP00154,valid,consistent with sensor trend,2025-10-09T19:00:00Z
+MOD00031,REP00297,duplicate,near-identical timestamp cluster,2025-10-17T08:00:00Z
+MOD00032,REP00090,duplicate,near-identical timestamp cluster,2025-10-11T10:00:00Z
+MOD00033,REP00357,invalid,out of scope,2025-10-26T18:00:00Z
+MOD00034,REP00316,valid,consistent with sensor trend,2025-11-13T14:00:00Z
+MOD00035,REP00386,duplicate,same zone+category+time window,2025-10-11T05:00:00Z
+MOD00036,REP00230,duplicate,near-identical timestamp cluster,2025-10-21T17:00:00Z
+MOD00037,REP00412,invalid,insufficient detail,2025-10-18T00:00:00Z
+MOD00038,REP00545,invalid,insufficient detail,2025-11-24T06:00:00Z
+MOD00039,REP00071,valid,consistent with sensor trend,2025-11-17T08:00:00Z
+MOD00040,REP00175,valid,consistent with sensor trend,2025-10-15T00:00:00Z
+MOD00041,REP00427,valid,clear description,2025-11-01T11:00:00Z
+MOD00042,REP00517,valid,clear description,2025-10-14T06:00:00Z
+MOD00043,REP00413,valid,consistent with sensor trend,2025-11-12T01:00:00Z
+MOD00044,REP00378,duplicate,matches existing open report,2025-10-15T02:00:00Z
+MOD00045,REP00523,duplicate,near-identical timestamp cluster,2025-11-07T10:00:00Z
+MOD00046,REP00030,valid,clear description,2025-10-20T12:00:00Z
+MOD00047,REP00542,valid,consistent with sensor trend,2025-11-24T11:00:00Z
+MOD00048,REP00549,valid,clear description,2025-11-20T05:00:00Z
+MOD00049,REP00032,valid,consistent with sensor trend,2025-10-12T08:00:00Z
+MOD00050,REP00098,valid,clear description,2025-10-08T15:00:00Z
+MOD00051,REP00016,duplicate,same zone+category+time window,2025-11-29T18:00:00Z
+MOD00052,REP00026,valid,consistent with sensor trend,2025-11-03T21:00:00Z
+MOD00053,REP00431,valid,multiple reports corroborate,2025-10-12T17:00:00Z
+MOD00054,REP00311,duplicate,same zone+category+time window,2025-11-05T08:00:00Z
+MOD00055,REP00630,duplicate,same zone+category+time window,2025-11-24T20:00:00Z
+MOD00056,REP00089,duplicate,same zone+category+time window,2025-10-17T17:00:00Z
+MOD00057,REP00028,valid,multiple reports corroborate,2025-11-20T08:00:00Z
+MOD00058,REP00206,valid,consistent with sensor trend,2025-10-23T23:00:00Z
+MOD00059,REP00537,valid,multiple reports corroborate,2025-11-21T16:00:00Z
+MOD00060,REP00257,duplicate,matches existing open report,2025-10-22T23:00:00Z
+MOD00061,REP00583,valid,consistent with sensor trend,2025-10-09T07:00:00Z
+MOD00062,REP00606,valid,multiple reports corroborate,2025-10-16T19:00:00Z
+MOD00063,REP00447,valid,multiple reports corroborate,2025-10-06T14:00:00Z
+MOD00064,REP00021,valid,consistent with sensor trend,2025-11-14T21:00:00Z
+MOD00065,REP00322,valid,consistent with sensor trend,2025-10-22T18:00:00Z
+MOD00066,REP00082,valid,clear description,2025-10-30T04:00:00Z
+MOD00067,REP00259,valid,clear description,2025-11-29T14:00:00Z
+MOD00068,REP00168,valid,multiple reports corroborate,2025-10-28T09:00:00Z
+MOD00069,REP00632,valid,multiple reports corroborate,2025-10-29T06:00:00Z
+MOD00070,REP00199,valid,consistent with sensor trend,2025-10-09T08:00:00Z
+MOD00071,REP00067,valid,multiple reports corroborate,2025-11-28T16:00:00Z
+MOD00072,REP00507,valid,multiple reports corroborate,2025-11-03T23:00:00Z
+MOD00073,REP00164,valid,multiple reports corroborate,2025-10-10T12:00:00Z
+MOD00074,REP00170,duplicate,matches existing open report,2025-10-12T03:00:00Z
+MOD00075,REP00103,invalid,out of scope,2025-10-29T05:00:00Z
+MOD00076,REP00194,valid,clear description,2025-11-18T03:00:00Z
+MOD00077,REP00245,valid,multiple reports corroborate,2025-11-22T11:00:00Z
+MOD00078,REP00381,valid,multiple reports corroborate,2025-10-15T04:00:00Z
+MOD00079,REP00074,valid,clear description,2025-11-12T05:00:00Z
+MOD00080,REP00502,duplicate,same zone+category+time window,2025-10-18T18:00:00Z
+MOD00081,REP00337,valid,clear description,2025-11-02T21:00:00Z
+MOD00082,REP00284,duplicate,matches existing open report,2025-10-19T08:00:00Z
+MOD00083,REP00478,valid,consistent with sensor trend,2025-10-07T07:00:00Z
+MOD00084,REP00573,invalid,contains personal info (removed),2025-11-12T11:00:00Z
+MOD00085,REP00430,duplicate,matches existing open report,2025-10-21T05:00:00Z
+MOD00086,REP00515,duplicate,matches existing open report,2025-11-02T03:00:00Z
+MOD00087,REP00019,valid,consistent with sensor trend,2025-10-31T21:00:00Z
+MOD00088,REP00135,invalid,insufficient detail,2025-10-28T06:00:00Z
+MOD00089,REP00024,valid,consistent with sensor trend,2025-10-26T12:00:00Z
+MOD00090,REP00196,invalid,insufficient detail,2025-11-08T09:00:00Z
+MOD00091,REP00530,valid,consistent with sensor trend,2025-10-27T01:00:00Z
+MOD00092,REP00165,duplicate,same zone+category+time window,2025-11-10T23:00:00Z
+MOD00093,REP00455,invalid,insufficient detail,2025-10-03T10:00:00Z
+MOD00094,REP00004,valid,consistent with sensor trend,2025-10-10T16:00:00Z
+MOD00095,REP00162,duplicate,matches existing open report,2025-10-30T18:00:00Z
+MOD00096,REP00514,valid,consistent with sensor trend,2025-11-21T03:00:00Z
+MOD00097,REP00410,invalid,contains personal info (removed),2025-10-06T12:00:00Z
+MOD00098,REP00056,valid,consistent with sensor trend,2025-10-28T05:00:00Z
+MOD00099,REP00617,valid,consistent with sensor trend,2025-11-05T00:00:00Z
+MOD00100,REP00256,valid,consistent with sensor trend,2025-10-23T05:00:00Z
+MOD00101,REP00214,duplicate,near-identical timestamp cluster,2025-10-08T06:00:00Z
+MOD00102,REP00218,valid,multiple reports corroborate,2025-10-21T12:00:00Z
+MOD00103,REP00012,valid,consistent with sensor trend,2025-11-02T05:00:00Z
+MOD00104,REP00120,valid,consistent with sensor trend,2025-11-11T20:00:00Z
+MOD00105,REP00212,duplicate,matches existing open report,2025-11-27T14:00:00Z
+MOD00106,REP00049,valid,clear description,2025-11-12T04:00:00Z
+MOD00107,REP00101,valid,multiple reports corroborate,2025-11-17T12:00:00Z
+MOD00108,REP00647,valid,consistent with sensor trend,2025-11-07T05:00:00Z
+MOD00109,REP00273,valid,clear description,2025-10-06T12:00:00Z
+MOD00110,REP00126,valid,multiple reports corroborate,2025-10-14T19:00:00Z
+MOD00111,REP00393,valid,multiple reports corroborate,2025-10-25T21:00:00Z
+MOD00112,REP00389,valid,clear description,2025-10-26T21:00:00Z
+MOD00113,REP00305,valid,clear description,2025-11-22T09:00:00Z
+MOD00114,REP00158,valid,multiple reports corroborate,2025-10-18T20:00:00Z
+MOD00115,REP00638,valid,clear description,2025-10-20T20:00:00Z
+MOD00116,REP00536,valid,clear description,2025-11-08T17:00:00Z
+MOD00117,REP00328,valid,clear description,2025-11-28T11:00:00Z
+MOD00118,REP00181,valid,clear description,2025-10-23T07:00:00Z
+MOD00119,REP00508,invalid,out of scope,2025-10-21T16:00:00Z
+MOD00120,REP00585,valid,multiple reports corroborate,2025-10-09T13:00:00Z
+MOD00121,REP00353,valid,clear description,2025-11-21T09:00:00Z
+MOD00122,REP00500,valid,consistent with sensor trend,2025-10-03T06:00:00Z
+MOD00123,REP00416,duplicate,same zone+category+time window,2025-10-21T17:00:00Z
+MOD00124,REP00644,valid,consistent with sensor trend,2025-10-17T17:00:00Z
+MOD00125,REP00391,valid,clear description,2025-10-07T20:00:00Z
+MOD00126,REP00340,invalid,out of scope,2025-10-16T11:00:00Z
+MOD00127,REP00183,duplicate,same zone+category+time window,2025-10-15T14:00:00Z
+MOD00128,REP00266,duplicate,near-identical timestamp cluster,2025-11-01T19:00:00Z
+MOD00129,REP00117,invalid,out of scope,2025-10-29T07:00:00Z
+MOD00130,REP00612,valid,consistent with sensor trend,2025-11-13T12:00:00Z
+MOD00131,REP00185,duplicate,same zone+category+time window,2025-10-18T09:00:00Z
+MOD00132,REP00022,invalid,out of scope,2025-10-22T01:00:00Z
+MOD00133,REP00059,valid,consistent with sensor trend,2025-11-29T11:00:00Z
+MOD00134,REP00543,valid,multiple reports corroborate,2025-10-04T13:00:00Z
+MOD00135,REP00167,valid,clear description,2025-10-12T17:00:00Z
+MOD00136,REP00397,valid,consistent with sensor trend,2025-11-23T02:00:00Z
+MOD00137,REP00124,valid,multiple reports corroborate,2025-10-20T20:00:00Z
+MOD00138,REP00323,valid,multiple reports corroborate,2025-10-25T04:00:00Z
+MOD00139,REP00315,valid,clear description,2025-10-31T17:00:00Z
+MOD00140,REP00174,valid,multiple reports corroborate,2025-10-19T13:00:00Z
+MOD00141,REP00462,valid,consistent with sensor trend,2025-11-14T09:00:00Z
+MOD00142,REP00477,valid,multiple reports corroborate,2025-10-19T10:00:00Z
+MOD00143,REP00314,valid,clear description,2025-11-27T20:00:00Z
+MOD00144,REP00309,valid,consistent with sensor trend,2025-10-20T11:00:00Z
+MOD00145,REP00013,valid,consistent with sensor trend,2025-10-05T20:00:00Z
+MOD00146,REP00493,duplicate,same zone+category+time window,2025-11-20T13:00:00Z
+MOD00147,REP00250,valid,consistent with sensor trend,2025-10-17T22:00:00Z
+MOD00148,REP00442,valid,multiple reports corroborate,2025-11-05T07:00:00Z
+MOD00149,REP00141,valid,clear description,2025-10-02T21:00:00Z
+MOD00150,REP00561,valid,multiple reports corroborate,2025-11-18T19:00:00Z
+MOD00151,REP00088,valid,consistent with sensor trend,2025-11-12T06:00:00Z
+MOD00152,REP00402,valid,clear description,2025-10-30T13:00:00Z
+MOD00153,REP00241,valid,consistent with sensor trend,2025-10-08T20:00:00Z
+MOD00154,REP00279,valid,multiple reports corroborate,2025-11-05T09:00:00Z
+MOD00155,REP00570,valid,multiple reports corroborate,2025-10-27T14:00:00Z
+MOD00156,REP00222,valid,multiple reports corroborate,2025-11-12T05:00:00Z
+MOD00157,REP00207,duplicate,matches existing open report,2025-11-19T08:00:00Z
+MOD00158,REP00035,valid,multiple reports corroborate,2025-10-12T20:00:00Z
+MOD00159,REP00152,valid,multiple reports corroborate,2025-10-06T16:00:00Z
+MOD00160,REP00310,valid,clear description,2025-11-22T20:00:00Z
+MOD00161,REP00541,valid,consistent with sensor trend,2025-10-15T20:00:00Z
+MOD00162,REP00139,duplicate,matches existing open report,2025-10-10T21:00:00Z
+MOD00163,REP00451,valid,consistent with sensor trend,2025-11-02T20:00:00Z
+MOD00164,REP00189,valid,multiple reports corroborate,2025-11-24T13:00:00Z
+MOD00165,REP00518,valid,clear description,2025-11-28T19:00:00Z
+MOD00166,REP00472,valid,consistent with sensor trend,2025-10-27T16:00:00Z
+MOD00167,REP00594,valid,multiple reports corroborate,2025-10-19T17:00:00Z
+MOD00168,REP00063,valid,multiple reports corroborate,2025-10-13T06:00:00Z
+MOD00169,REP00584,valid,consistent with sensor trend,2025-10-10T23:00:00Z
+MOD00170,REP00244,valid,clear description,2025-10-23T01:00:00Z
+MOD00171,REP00480,valid,clear description,2025-11-23T04:00:00Z
+MOD00172,REP00527,duplicate,matches existing open report,2025-10-18T04:00:00Z
+MOD00173,REP00358,valid,multiple reports corroborate,2025-10-17T09:00:00Z
+MOD00174,REP00460,invalid,out of scope,2025-10-23T22:00:00Z
+MOD00175,REP00535,duplicate,near-identical timestamp cluster,2025-11-05T08:00:00Z
+MOD00176,REP00274,duplicate,matches existing open report,2025-10-20T02:00:00Z
+MOD00177,REP00113,valid,multiple reports corroborate,2025-10-15T21:00:00Z
+MOD00178,REP00559,invalid,out of scope,2025-11-14T16:00:00Z
+MOD00179,REP00392,duplicate,matches existing open report,2025-10-15T05:00:00Z
+MOD00180,REP00339,valid,clear description,2025-10-17T05:00:00Z
+MOD00181,REP00374,duplicate,near-identical timestamp cluster,2025-10-07T12:00:00Z
+MOD00182,REP00217,invalid,contains personal info (removed),2025-11-12T15:00:00Z
+MOD00183,REP00003,valid,multiple reports corroborate,2025-10-29T08:00:00Z
+MOD00184,REP00131,valid,consistent with sensor trend,2025-10-23T14:00:00Z
+MOD00185,REP00419,valid,clear description,2025-10-16T02:00:00Z
+MOD00186,REP00142,valid,clear description,2025-11-08T13:00:00Z
+MOD00187,REP00062,valid,consistent with sensor trend,2025-10-30T03:00:00Z
+MOD00188,REP00226,valid,multiple reports corroborate,2025-10-24T15:00:00Z
+MOD00189,REP00463,duplicate,same zone+category+time window,2025-11-10T16:00:00Z
+MOD00190,REP00557,valid,consistent with sensor trend,2025-10-26T00:00:00Z
+MOD00191,REP00649,valid,consistent with sensor trend,2025-10-07T16:00:00Z
+MOD00192,REP00601,duplicate,matches existing open report,2025-11-29T13:00:00Z
+MOD00193,REP00129,valid,clear description,2025-11-07T23:00:00Z
+MOD00194,REP00083,valid,multiple reports corroborate,2025-11-25T21:00:00Z
+MOD00195,REP00292,valid,consistent with sensor trend,2025-11-08T03:00:00Z
+MOD00196,REP00306,valid,multiple reports corroborate,2025-10-28T14:00:00Z
+MOD00197,REP00225,duplicate,near-identical timestamp cluster,2025-10-18T01:00:00Z
+MOD00198,REP00156,valid,clear description,2025-11-09T22:00:00Z
+MOD00199,REP00025,invalid,insufficient detail,2025-11-08T16:00:00Z
+MOD00200,REP00023,duplicate,same zone+category+time window,2025-10-14T14:00:00Z
+MOD00201,REP00122,valid,multiple reports corroborate,2025-11-05T12:00:00Z
+MOD00202,REP00600,duplicate,matches existing open report,2025-10-09T14:00:00Z
+MOD00203,REP00121,invalid,out of scope,2025-10-09T00:00:00Z
+MOD00204,REP00157,duplicate,near-identical timestamp cluster,2025-10-03T05:00:00Z
+MOD00205,REP00383,valid,multiple reports corroborate,2025-10-26T17:00:00Z
+MOD00206,REP00440,duplicate,matches existing open report,2025-11-15T01:00:00Z
+MOD00207,REP00444,valid,consistent with sensor trend,2025-11-22T15:00:00Z
+MOD00208,REP00236,invalid,contains personal info (removed),2025-10-31T05:00:00Z
+MOD00209,REP00267,duplicate,matches existing open report,2025-10-05T19:00:00Z
+MOD00210,REP00496,invalid,insufficient detail,2025-10-16T18:00:00Z
+MOD00211,REP00489,valid,multiple reports corroborate,2025-10-29T23:00:00Z
+MOD00212,REP00138,valid,clear description,2025-10-27T12:00:00Z
+MOD00213,REP00209,valid,consistent with sensor trend,2025-11-13T10:00:00Z
+MOD00214,REP00592,valid,consistent with sensor trend,2025-10-26T05:00:00Z
+MOD00215,REP00345,valid,consistent with sensor trend,2025-10-14T20:00:00Z
+MOD00216,REP00223,valid,clear description,2025-10-27T14:00:00Z
+MOD00217,REP00055,valid,consistent with sensor trend,2025-10-15T11:00:00Z
+MOD00218,REP00238,duplicate,same zone+category+time window,2025-11-17T09:00:00Z
+MOD00219,REP00331,valid,consistent with sensor trend,2025-10-20T12:00:00Z
+MOD00220,REP00346,invalid,insufficient detail,2025-11-14T07:00:00Z
+MOD00221,REP00193,valid,clear description,2025-10-21T20:00:00Z
+MOD00222,REP00190,valid,clear description,2025-11-20T09:00:00Z
+MOD00223,REP00578,valid,multiple reports corroborate,2025-11-10T21:00:00Z
+MOD00224,REP00252,valid,multiple reports corroborate,2025-11-18T13:00:00Z
+MOD00225,REP00099,invalid,out of scope,2025-11-16T01:00:00Z
+MOD00226,REP00484,valid,multiple reports corroborate,2025-10-18T03:00:00Z
+MOD00227,REP00368,valid,clear description,2025-11-10T16:00:00Z
+MOD00228,REP00471,invalid,out of scope,2025-10-08T14:00:00Z
+MOD00229,REP00616,valid,multiple reports corroborate,2025-11-16T14:00:00Z
+MOD00230,REP00179,valid,consistent with sensor trend,2025-10-26T13:00:00Z
+MOD00231,REP00587,duplicate,same zone+category+time window,2025-10-12T13:00:00Z
+MOD00232,REP00333,valid,clear description,2025-11-12T07:00:00Z
+MOD00233,REP00359,invalid,out of scope,2025-11-28T00:00:00Z
+MOD00234,REP00298,valid,multiple reports corroborate,2025-10-21T06:00:00Z
+MOD00235,REP00051,valid,clear description,2025-11-28T06:00:00Z
+MOD00236,REP00330,duplicate,same zone+category+time window,2025-11-23T13:00:00Z
+MOD00237,REP00406,valid,consistent with sensor trend,2025-10-21T13:00:00Z
+MOD00238,REP00445,valid,clear description,2025-11-08T20:00:00Z
+MOD00239,REP00163,valid,clear description,2025-11-24T17:00:00Z
+MOD00240,REP00285,valid,consistent with sensor trend,2025-11-02T02:00:00Z
+MOD00241,REP00426,valid,consistent with sensor trend,2025-10-20T01:00:00Z
+MOD00242,REP00020,valid,consistent with sensor trend,2025-11-28T12:00:00Z
+MOD00243,REP00603,valid,multiple reports corroborate,2025-10-12T08:00:00Z
+MOD00244,REP00039,valid,clear description,2025-10-19T21:00:00Z
+MOD00245,REP00272,valid,consistent with sensor trend,2025-11-21T04:00:00Z
+MOD00246,REP00576,invalid,insufficient detail,2025-11-12T12:00:00Z
+MOD00247,REP00593,valid,multiple reports corroborate,2025-11-05T19:00:00Z
+MOD00248,REP00634,valid,multiple reports corroborate,2025-10-31T16:00:00Z
+MOD00249,REP00468,valid,multiple reports corroborate,2025-11-01T17:00:00Z
+MOD00250,REP00414,valid,consistent with sensor trend,2025-10-06T07:00:00Z
+MOD00251,REP00002,valid,consistent with sensor trend,2025-10-24T18:00:00Z
+MOD00252,REP00291,valid,clear description,2025-10-03T20:00:00Z
+MOD00253,REP00313,valid,multiple reports corroborate,2025-11-15T11:00:00Z
+MOD00254,REP00520,valid,clear description,2025-10-17T21:00:00Z
+MOD00255,REP00188,duplicate,near-identical timestamp cluster,2025-10-07T14:00:00Z
+MOD00256,REP00047,valid,multiple reports corroborate,2025-11-17T08:00:00Z
+MOD00257,REP00192,valid,multiple reports corroborate,2025-11-14T12:00:00Z
+MOD00258,REP00248,valid,clear description,2025-11-07T13:00:00Z
+MOD00259,REP00195,valid,consistent with sensor trend,2025-10-30T13:00:00Z
+MOD00260,REP00043,invalid,insufficient detail,2025-10-25T18:00:00Z
+MOD00261,REP00321,valid,consistent with sensor trend,2025-10-10T16:00:00Z
+MOD00262,REP00452,valid,clear description,2025-10-09T14:00:00Z
+MOD00263,REP00605,invalid,out of scope,2025-10-26T18:00:00Z
+MOD00264,REP00054,valid,clear description,2025-11-22T16:00:00Z
+MOD00265,REP00395,valid,consistent with sensor trend,2025-10-17T03:00:00Z
+MOD00266,REP00237,valid,multiple reports corroborate,2025-10-27T03:00:00Z
+MOD00267,REP00628,valid,clear description,2025-11-09T22:00:00Z
+MOD00268,REP00304,valid,clear description,2025-10-15T19:00:00Z
+MOD00269,REP00318,valid,clear description,2025-10-16T17:00:00Z
+MOD00270,REP00038,duplicate,near-identical timestamp cluster,2025-10-27T03:00:00Z
+MOD00271,REP00360,valid,multiple reports corroborate,2025-10-29T06:00:00Z
+MOD00272,REP00278,valid,multiple reports corroborate,2025-10-09T19:00:00Z
+MOD00273,REP00510,valid,clear description,2025-10-11T00:00:00Z
+MOD00274,REP00433,duplicate,matches existing open report,2025-10-25T10:00:00Z
+MOD00275,REP00307,valid,consistent with sensor trend,2025-11-18T00:00:00Z
+MOD00276,REP00488,valid,consistent with sensor trend,2025-10-30T15:00:00Z
+MOD00277,REP00147,valid,multiple reports corroborate,2025-10-26T14:00:00Z
+MOD00278,REP00569,valid,multiple reports corroborate,2025-10-17T15:00:00Z
+MOD00279,REP00622,invalid,contains personal info (removed),2025-10-12T17:00:00Z
+MOD00280,REP00464,duplicate,near-identical timestamp cluster,2025-10-18T13:00:00Z
+MOD00281,REP00498,valid,clear description,2025-10-29T09:00:00Z
+MOD00282,REP00173,valid,multiple reports corroborate,2025-11-07T04:00:00Z
+MOD00283,REP00229,valid,clear description,2025-10-22T13:00:00Z
+MOD00284,REP00521,valid,consistent with sensor trend,2025-11-08T19:00:00Z
+MOD00285,REP00029,valid,clear description,2025-10-12T01:00:00Z
+MOD00286,REP00042,invalid,contains personal info (removed),2025-11-12T13:00:00Z
+MOD00287,REP00483,duplicate,near-identical timestamp cluster,2025-11-16T21:00:00Z
+MOD00288,REP00176,valid,clear description,2025-11-29T23:00:00Z
+MOD00289,REP00370,valid,consistent with sensor trend,2025-10-29T20:00:00Z
+MOD00290,REP00377,duplicate,near-identical timestamp cluster,2025-11-29T22:00:00Z
+MOD00291,REP00457,invalid,insufficient detail,2025-11-03T23:00:00Z
+MOD00292,REP00497,duplicate,matches existing open report,2025-11-25T09:00:00Z
+MOD00293,REP00086,invalid,insufficient detail,2025-11-07T17:00:00Z
+MOD00294,REP00243,valid,clear description,2025-10-06T07:00:00Z
+MOD00295,REP00246,valid,multiple reports corroborate,2025-11-22T14:00:00Z
+MOD00296,REP00403,valid,consistent with sensor trend,2025-10-07T17:00:00Z
+MOD00297,REP00524,valid,consistent with sensor trend,2025-10-23T22:00:00Z
+MOD00298,REP00449,valid,consistent with sensor trend,2025-10-29T12:00:00Z
+MOD00299,REP00240,duplicate,near-identical timestamp cluster,2025-11-23T11:00:00Z
+MOD00300,REP00589,valid,multiple reports corroborate,2025-10-23T11:00:00Z
+MOD00301,REP00470,valid,clear description,2025-11-02T11:00:00Z
+MOD00302,REP00513,valid,clear description,2025-10-12T11:00:00Z
+MOD00303,REP00242,valid,consistent with sensor trend,2025-11-22T20:00:00Z
+MOD00304,REP00562,valid,multiple reports corroborate,2025-10-19T18:00:00Z
+MOD00305,REP00553,valid,consistent with sensor trend,2025-10-14T16:00:00Z
+MOD00306,REP00501,valid,multiple reports corroborate,2025-10-27T16:00:00Z
+MOD00307,REP00422,invalid,contains personal info (removed),2025-10-11T14:00:00Z
+MOD00308,REP00385,valid,consistent with sensor trend,2025-11-27T18:00:00Z
+MOD00309,REP00446,valid,consistent with sensor trend,2025-10-03T12:00:00Z
+MOD00310,REP00336,invalid,contains personal info (removed),2025-11-12T18:00:00Z
+MOD00311,REP00096,valid,consistent with sensor trend,2025-11-23T14:00:00Z
+MOD00312,REP00473,valid,consistent with sensor trend,2025-11-23T12:00:00Z
+MOD00313,REP00467,valid,consistent with sensor trend,2025-10-30T09:00:00Z
+MOD00314,REP00568,valid,clear description,2025-10-19T09:00:00Z
+MOD00315,REP00582,valid,consistent with sensor trend,2025-10-04T09:00:00Z
+MOD00316,REP00485,invalid,out of scope,2025-11-24T22:00:00Z
+MOD00317,REP00006,valid,consistent with sensor trend,2025-11-26T06:00:00Z
+MOD00318,REP00608,duplicate,near-identical timestamp cluster,2025-10-11T03:00:00Z
+MOD00319,REP00491,valid,consistent with sensor trend,2025-10-08T08:00:00Z
+MOD00320,REP00371,valid,consistent with sensor trend,2025-11-11T08:00:00Z
+MOD00321,REP00619,valid,multiple reports corroborate,2025-11-21T12:00:00Z
+MOD00322,REP00454,valid,multiple reports corroborate,2025-10-23T06:00:00Z
+MOD00323,REP00429,valid,clear description,2025-10-08T09:00:00Z
+MOD00324,REP00085,valid,multiple reports corroborate,2025-11-16T15:00:00Z
+MOD00325,REP00648,valid,consistent with sensor trend,2025-10-25T07:00:00Z
+MOD00326,REP00481,valid,consistent with sensor trend,2025-10-22T06:00:00Z
+MOD00327,REP00366,valid,clear description,2025-10-05T12:00:00Z
+MOD00328,REP00106,valid,multiple reports corroborate,2025-11-21T05:00:00Z
+MOD00329,REP00350,valid,clear description,2025-10-28T04:00:00Z
+MOD00330,REP00116,valid,multiple reports corroborate,2025-11-29T10:00:00Z
