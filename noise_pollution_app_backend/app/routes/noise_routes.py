@@ -7,9 +7,33 @@ This module defines blueprints for retrieving noise observations and hotspots.
 import pandas as pd
 from flask import Blueprint, request, jsonify
 from ..auth import check_role
-from ..data_loader import observations, hotspots
+from .. import data_loader
 
 noise_bp = Blueprint('noise', __name__)
+
+@noise_bp.route('/zones', methods=['GET'])
+def get_zones():
+    """
+    Retrieve all zones.
+
+    Returns:
+        JSON: List of all zones.
+    """
+    if not check_role('community'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    return jsonify(data_loader.zones.to_dict(orient='records'))
+
+@noise_bp.route('/interventions', methods=['GET'])
+def get_interventions():
+    """
+    Retrieve all available interventions.
+
+    Returns:
+        JSON: List of all interventions.
+    """
+    if not check_role('community'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    return jsonify(data_loader.interventions.to_dict(orient='records'))
 
 @noise_bp.route('/noise_data', methods=['GET'])
 def get_noise_data():
@@ -32,7 +56,7 @@ def get_noise_data():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
-    filtered = observations
+    filtered = data_loader.observations
     if zone_ids:
         filtered = filtered[filtered['zone_id'].isin(zone_ids)]
     if categories:
@@ -56,5 +80,5 @@ def get_hotspots():
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
     top_n = int(request.args.get('top', 5))
-    top_hotspots = hotspots.sort_values('severity_score', ascending=False).head(top_n)
+    top_hotspots = data_loader.hotspots.sort_values('severity_score', ascending=False).head(top_n)
     return jsonify(top_hotspots.to_dict(orient='records'))

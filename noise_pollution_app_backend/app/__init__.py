@@ -5,6 +5,7 @@ This module initializes the Flask app, loads data, and registers blueprints for 
 """
 
 from flask import Flask
+from flask_cors import CORS
 from .data_loader import load_data
 from .routes.noise_routes import noise_bp
 from .routes.report_routes import report_bp
@@ -20,6 +21,9 @@ def create_app():
         Flask: The configured Flask app instance.
     """
     app = Flask(__name__)
+
+    # Enable CORS for all routes
+    CORS(app)
 
     # Load data globally
     load_data()

@@ -64,27 +64,12 @@
               </thead>
               <!-- Hook point -->
               <tbody id="hotspotTable">
-                <tr>
-                  <td class="fw-semibold">1</td><td>Zone A</td>
-                  <td><span class="badge bg-danger-subtle text-danger">78.4</span></td>
-                  <td class="small">High avg dB + many validated reports</td>
-                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
-                </tr>
-                <tr>
-                  <td class="fw-semibold">2</td><td>Zone C</td>
-                  <td><span class="badge bg-warning-subtle text-warning">71.2</span></td>
-                  <td class="small">Construction peaks in mornings</td>
-                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
-                </tr>
-                <tr>
-                  <td class="fw-semibold">3</td><td>Zone B</td>
-                  <td><span class="badge bg-warning-subtle text-warning">69.6</span></td>
-                  <td class="small">Traffic noise in evening window</td>
-                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
-                </tr>
               </tbody>
             </table>
           </div>
+
+          <!-- API data container -->
+          <div id="hotspots-container"></div>
 
           <div class="small text-muted mt-3">
             Hotspots update after moderation decisions (valid/duplicate/invalid).

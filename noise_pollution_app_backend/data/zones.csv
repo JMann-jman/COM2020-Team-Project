@@ -1,13 +1,13 @@
 zone_id,name,geometry_stub,tags
-Z01,Zone 1,Schematic for Zone 1,event
-Z02,Zone 2,Schematic for Zone 2,residential
-Z03,Zone 3,Schematic for Zone 3,residential
-Z04,Zone 4,Schematic for Zone 4,event
-Z05,Zone 5,Schematic for Zone 5,campus
-Z06,Zone 6,Schematic for Zone 6,residential
-Z07,Zone 7,Schematic for Zone 7,residential
-Z08,Zone 8,Schematic for Zone 8,residential
-Z09,Zone 9,Schematic for Zone 9,event
-Z10,Zone 10,Schematic for Zone 10,residential
-Z11,Zone 11,Schematic for Zone 11,event
-Z12,Zone 12,Schematic for Zone 12,event
+Z01,Zone A,POLY_STUB_A,residential
+Z02,Zone B,POLY_STUB_B,residential
+Z03,Zone C,POLY_STUB_C,campus
+Z04,Zone D,POLY_STUB_D,campus
+Z05,Zone E,POLY_STUB_E,event
+Z06,Zone F,POLY_STUB_F,event
+Z07,Zone G,POLY_STUB_G,mixed
+Z08,Zone H,POLY_STUB_H,mixed
+Z09,Zone I,POLY_STUB_I,residential
+Z10,Zone J,POLY_STUB_J,campus
+Z11,Zone K,POLY_STUB_K,mixed
+Z12,Zone L,POLY_STUB_L,residential

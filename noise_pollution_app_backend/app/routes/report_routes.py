@@ -5,12 +5,34 @@ This module defines blueprints for submitting and moderating incident reports.
 """
 
 import pandas as pd
+import os
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from ..auth import check_role
-from ..data_loader import reports, decisions
+from .. import data_loader
 
 report_bp = Blueprint('report', __name__)
+
+@report_bp.route('/reports', methods=['GET'])
+def get_reports():
+    """
+    Retrieve all incident reports.
+
+    Query Parameters:
+        status (str): Filter by report status (pending, under_review, valid, duplicate, invalid).
+
+    Returns:
+        JSON: List of incident reports.
+    """
+    if not check_role('community'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    status = request.args.get('status')
+    
+    filtered = data_loader.reports
+    if status:
+        filtered = filtered[filtered['status'] == status]
+    
+    return jsonify(filtered.to_dict(orient='records'))
 
 @report_bp.route('/reports', methods=['POST'])
 def submit_report():
@@ -25,7 +47,6 @@ def submit_report():
     Returns:
         JSON: Success message or duplicate flag.
     """
-    global reports
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
     data = request.json
@@ -38,37 +59,37 @@ def submit_report():
     time_window = timedelta(hours=1)
 
     # Rule 1: Same zone + category + time window
-    rule1 = reports[(reports['zone_id'] == zone) & (reports['category'] == category) & (pd.to_datetime(reports['timestamp']) > now - time_window)]
+    rule1 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
 
     # Rule 2: Same zone + category + description (exact match)
-    rule2 = reports[(reports['zone_id'] == zone) & (reports['category'] == category) & (reports['description_stub'] == description)]
+    rule2 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (data_loader.reports['description_stub'] == description)]
 
     # Rule 3: Same zone + time window (any category)
-    rule3 = reports[(reports['zone_id'] == zone) & (pd.to_datetime(reports['timestamp']) > now - time_window)]
+    rule3 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
 
     # Rule 4: Same category + time window (any zone)
-    rule4 = reports[(reports['category'] == category) & (pd.to_datetime(reports['timestamp']) > now - time_window)]
+    rule4 = data_loader.reports[(data_loader.reports['category'] == category) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
 
     # Rule 5: Same zone + description
-    rule5 = reports[(reports['zone_id'] == zone) & (reports['description_stub'] == description)]
+    rule5 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['description_stub'] == description)]
 
     # Rule 6: Same description + time window
-    rule6 = reports[(reports['description_stub'] == description) & (pd.to_datetime(reports['timestamp']) > now - time_window)]
+    rule6 = data_loader.reports[(data_loader.reports['description_stub'] == description) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
 
     if not rule1.empty or not rule2.empty or not rule3.empty or not rule4.empty or not rule5.empty or not rule6.empty:
-        return jsonify({'message': 'Duplicate report flagged'}), 409
+        return jsonify({'message': 'Duplicate report flagged', 'is_duplicate': True}), 409
 
     new_report = pd.DataFrame({
-        'report_id': [f'R{len(reports)+1:03d}'],
+        'report_id': [f'R{len(data_loader.reports)+1:03d}'],
         'zone_id': [zone],
         'timestamp': [datetime.now()],
         'category': [category],
         'description_stub': [description],
         'status': ['pending']
     })
-    reports = pd.concat([reports, new_report], ignore_index=True)
-    reports.to_csv('data/incident_reports.csv', index=False)
-    return jsonify({'message': 'Report submitted'}), 201
+    data_loader.reports = pd.concat([data_loader.reports, new_report], ignore_index=True)
+    data_loader.reports.to_csv(os.path.join(data_loader.DATA_DIR, 'incident_reports.csv'), index=False)
+    return jsonify({'message': 'Report submitted', 'is_duplicate': False}), 201
 
 @report_bp.route('/reports/<report_id>', methods=['PUT'])
 def moderate_report(report_id):
@@ -85,22 +106,21 @@ def moderate_report(report_id):
     Returns:
         JSON: Success message.
     """
-    global reports, decisions
     if not check_role('planner'):
         return jsonify({'error': 'Unauthorized'}), 403
     data = request.json
     decision = data['decision']
     reason = data['reason']
 
-    reports.loc[reports['report_id'] == report_id, 'status'] = decision
+    data_loader.reports.loc[data_loader.reports['report_id'] == report_id, 'status'] = decision
     new_decision = pd.DataFrame({
-        'decision_id': [f'D{len(decisions)+1:03d}'],
+        'decision_id': [f'D{len(data_loader.decisions)+1:03d}'],
         'report_id': [report_id],
         'decision': [decision],
         'reason': [reason],
         'timestamp': [datetime.now()]
     })
-    decisions = pd.concat([decisions, new_decision], ignore_index=True)
-    decisions.to_csv('data/moderation_decisions.csv', index=False)
-    reports.to_csv('data/incident_reports.csv', index=False)
+    data_loader.decisions = pd.concat([data_loader.decisions, new_decision], ignore_index=True)
+    data_loader.decisions.to_csv(os.path.join(data_loader.DATA_DIR, 'moderation_decisions.csv'), index=False)
+    data_loader.reports.to_csv(os.path.join(data_loader.DATA_DIR, 'incident_reports.csv'), index=False)
     return jsonify({'message': 'Moderated'}), 200

@@ -41,15 +41,12 @@
             <span class="badge text-bg-light">Prototype v0.1</span>
           </div>
 
-          <form id="reportForm" method="post" action="{{ url_for('report') }}" novalidate>
+          <form id="reportForm" onsubmit="submitIncidentReport(event)" novalidate>
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label fw-semibold" for="zone">Zone *</label>
                 <select class="form-select" id="zone" name="zone" required>
                   <option value="" selected disabled>Select a zone</option>
-                  <option>Zone A</option><option>Zone B</option><option>Zone C</option><option>Zone D</option>
-                  <option>Zone E</option><option>Zone F</option><option>Zone G</option><option>Zone H</option>
-                  <option>Zone I</option><option>Zone J</option><option>Zone K</option><option>Zone L</option>
                 </select>
                 <div class="invalid-feedback">Please select a zone.</div>
               </div>

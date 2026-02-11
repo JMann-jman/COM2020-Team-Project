@@ -31,10 +31,7 @@
         <div class="col-md-4">
           <label class="form-label fw-semibold" for="zone">Zone</label>
           <select class="form-select" id="zone" name="zone">
-            <option selected>Zone A</option>
-            <option>Zone B</option><option>Zone C</option><option>Zone D</option>
-            <option>Zone E</option><option>Zone F</option><option>Zone G</option><option>Zone H</option>
-            <option>Zone I</option><option>Zone J</option><option>Zone K</option><option>Zone L</option>
+            <option value="">Select a zone...</option>
           </select>
         </div>
 
@@ -156,6 +153,9 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Hook point for API data -->
+          <div id="noise-data-container"></div>
 
           <div class="d-grid mt-3">
             <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('report') }}">

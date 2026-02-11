@@ -2,6 +2,14 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+# Backend API base URL
+BACKEND_URL = "http://localhost:5001"
+
+# Make BACKEND_URL available in templates
+@app.context_processor
+def inject_backend_url():
+    return dict(backend_url=BACKEND_URL)
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -33,4 +41,4 @@ def quest():
     return render_template("quest.html")
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, port=5000, use_reloader=False)
