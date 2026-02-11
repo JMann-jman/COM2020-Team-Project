@@ -12,6 +12,7 @@ from .routes.report_routes import report_bp
 from .routes.plan_routes import plan_bp
 from .routes.export_routes import export_bp
 from .routes.success_routes import success_bp
+from .routes.quest_routes import quest_bp
 
 def create_app():
     """
@@ -34,5 +35,6 @@ def create_app():
     app.register_blueprint(plan_bp, url_prefix='/api')
     app.register_blueprint(export_bp, url_prefix='/api')
     app.register_blueprint(success_bp, url_prefix='/api')
+    app.register_blueprint(quest_bp, url_prefix='/api')
 
     return app
