@@ -1,0 +1,183 @@
+<!-- templates/explore.html -->
+{% extends "base.html" %}
+{% block title %}Explore · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level only</span>
+        <span class="pill pill-soft"><i class="bi bi-database me-1"></i>Synthetic & anonymised</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Explore Noise Trends</h1>
+      <p class="muted mb-0">Use filters to view zone-level noise trends and summary metrics.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-pill" disabled
+              data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">Export CSV</button>
+      <button class="btn btn-outline-secondary btn-pill" disabled
+              data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">Export PDF</button>
+    </div>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <!-- Filters -->
+  <div class="card app-card mb-3">
+    <div class="card-body">
+      <form class="row g-3 align-items-end" method="get" action="{{ url_for('explore') }}">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" for="zone">Zone</label>
+          <select class="form-select" id="zone" name="zone">
+            <option selected>Zone A</option>
+            <option>Zone B</option><option>Zone C</option><option>Zone D</option>
+            <option>Zone E</option><option>Zone F</option><option>Zone G</option><option>Zone H</option>
+            <option>Zone I</option><option>Zone J</option><option>Zone K</option><option>Zone L</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" for="time_window">Time window</label>
+          <select class="form-select" id="time_window" name="time_window">
+            <option>Last 24 hours</option>
+            <option selected>Last 7 days</option>
+            <option>Last 4 weeks</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold" for="source">Source</label>
+          <select class="form-select" id="source" name="source">
+            <option selected>Both</option>
+            <option>Sensor</option>
+            <option>Reports</option>
+          </select>
+        </div>
+
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-dark btn-pill" type="submit">
+            <i class="bi bi-funnel me-1"></i>Apply
+          </button>
+        </div>
+      </form>
+
+      <div class="small text-muted mt-2">
+        Data is synthetic and aggregated by zone. This prototype does not show exact addresses or identifiable locations.
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary metrics (hook points for backend later) -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="muted small">Average noise (dB)</div>
+          <div class="h2 fw-bold mb-0" id="avgDb">62</div>
+          <div class="small text-muted">Selected window</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="muted small">Peak time</div>
+          <div class="h2 fw-bold mb-0" id="peakTime">18:00–20:00</div>
+          <div class="small text-muted">Highest average</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="muted small">Reports in window</div>
+          <div class="h2 fw-bold mb-0" id="reportCount">38</div>
+          <div class="small text-muted">All categories</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart + table -->
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Noise trend (dB)</div>
+              <div class="muted small">Chart placeholder (Chart.js later)</div>
+            </div>
+            <span class="badge text-bg-light">Placeholder</span>
+          </div>
+
+          <!-- Hook point -->
+          <div id="trendChart" class="chart-placeholder">
+            <div class="muted small">Chart renders here using API data.</div>
+          </div>
+
+          <div class="small text-muted mt-3">
+            Demo tip: use this view to show exploration before submitting a report.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Recent observations</div>
+              <div class="muted small">Latest 8 records (mock)</div>
+            </div>
+            <span class="badge text-bg-light">Mock</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr class="small text-muted">
+                  <th>Time</th><th>Source</th><th>dB</th><th>Category</th>
+                </tr>
+              </thead>
+              <!-- Hook point -->
+              <tbody id="observationsTable">
+                <tr><td>Mon 18:10</td><td><span class="badge bg-light text-dark">Sensor</span></td><td>68</td><td>Traffic</td></tr>
+                <tr><td>Mon 19:05</td><td><span class="badge bg-light text-dark">Report</span></td><td>72</td><td>Nightlife</td></tr>
+                <tr><td>Tue 08:40</td><td><span class="badge bg-light text-dark">Sensor</span></td><td>59</td><td>Construction</td></tr>
+                <tr><td>Tue 18:55</td><td><span class="badge bg-light text-dark">Report</span></td><td>70</td><td>Traffic</td></tr>
+                <tr><td>Wed 12:15</td><td><span class="badge bg-light text-dark">Sensor</span></td><td>61</td><td>General</td></tr>
+                <tr><td>Thu 20:05</td><td><span class="badge bg-light text-dark">Report</span></td><td>74</td><td>Nightlife</td></tr>
+                <tr><td>Fri 17:20</td><td><span class="badge bg-light text-dark">Sensor</span></td><td>66</td><td>Traffic</td></tr>
+                <tr><td>Sat 10:05</td><td><span class="badge bg-light text-dark">Sensor</span></td><td>57</td><td>Construction</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-grid mt-3">
+            <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('report') }}">
+              <i class="bi bi-megaphone me-1"></i>Report an incident
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .chart-placeholder{
+    height: 360px;
+    border-radius: 16px;
+    border: 1px dashed rgba(15,23,42,0.18);
+    background: rgba(255,255,255,0.6);
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    text-align: center;
+  }
+</style>
+{% endblock %}

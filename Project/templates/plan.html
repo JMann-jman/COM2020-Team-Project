@@ -1,0 +1,254 @@
+<!-- templates/plan.html -->
+{% extends "base.html" %}
+{% block title %}Plan · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="pill pill-soft"><i class="bi bi-tools me-1"></i>Intervention catalogue</span>
+        <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level planning</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Mitigation Planner</h1>
+      <p class="muted mb-0">Estimate cost, feasibility, and expected noise reduction for a selected intervention.</p>
+    </div>
+
+    <button class="btn btn-outline-secondary btn-pill" disabled
+            data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">
+      <i class="bi bi-file-earmark-arrow-down me-1"></i>Export plan
+    </button>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <div class="card app-card mb-3">
+    <div class="card-body d-flex gap-3 align-items-start">
+      <div class="badge-icon bg-soft-slate flex-shrink-0"><i class="bi bi-eye"></i></div>
+      <div>
+        <div class="h6 mb-1">Transparent impact model (Sprint 1)</div>
+        <div class="muted small">
+          Expected impact is a simple range (dB reduction) seeded for demo and refined in Sprint 2.
+          This is not an ML prediction.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h5 mb-1">Create a plan</div>
+              <div class="muted small">Sprint 1: single intervention plan.</div>
+            </div>
+            <span class="badge text-bg-light">Prototype v0.1</span>
+          </div>
+
+          <form id="planForm" method="post" action="{{ url_for('plan') }}" novalidate>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="zone">Zone *</label>
+                <select class="form-select" id="zone" name="zone" required>
+                  <option value="" selected disabled>Select a zone</option>
+                  <option>Zone A</option><option>Zone B</option><option>Zone C</option><option>Zone D</option>
+                  <option>Zone E</option><option>Zone F</option><option>Zone G</option><option>Zone H</option>
+                  <option>Zone I</option><option>Zone J</option><option>Zone K</option><option>Zone L</option>
+                </select>
+                <div class="invalid-feedback">Please select a zone.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="intervention">Intervention *</label>
+                <!-- Hook point: backend can render options -->
+                <select class="form-select" id="intervention" name="intervention" required>
+                  <option value="" selected disabled>Select an intervention</option>
+                  <option value="signage">Signage (quiet zone reminders)</option>
+                  <option value="barriers">Noise barriers</option>
+                  <option value="schedule">Scheduling changes</option>
+                  <option value="quiet-hours">Quiet hours policy</option>
+                  <option value="maintenance">Road maintenance</option>
+                  <option value="enforcement">Targeted enforcement</option>
+                </select>
+                <div class="invalid-feedback">Please select an intervention.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold" for="notes">Notes (optional)</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3"
+                          placeholder="Short notes (stakeholders, timeline)."></textarea>
+              </div>
+
+              <div class="col-12 d-flex flex-wrap gap-2">
+                <button class="btn btn-dark btn-pill" type="submit">
+                  <i class="bi bi-plus-circle me-1"></i>Create plan
+                </button>
+                <button class="btn btn-outline-secondary btn-pill" type="reset">
+                  <i class="bi bi-x-circle me-1"></i>Clear
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div id="planConfirmation" class="alert alert-success mt-4 d-none" role="status">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            Plan created (prototype). Status: <strong>Planned</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Intervention details</div>
+              <div class="muted small">Auto-updates based on selection (seeded)</div>
+            </div>
+            <span class="badge text-bg-light">Seeded</span>
+          </div>
+
+          <div class="d-grid gap-2">
+            <div class="p-3 rounded-4 border bg-white">
+              <div class="muted small">Cost band</div>
+              <div class="h5 mb-0" id="costBand">—</div>
+            </div>
+            <div class="p-3 rounded-4 border bg-white">
+              <div class="muted small">Feasibility score</div>
+              <div class="h5 mb-0" id="feasibility">—</div>
+            </div>
+            <div class="p-3 rounded-4 border bg-white">
+              <div class="muted small">Expected impact (dB reduction)</div>
+              <div class="h5 mb-0" id="impact">—</div>
+            </div>
+          </div>
+
+          <div class="small text-muted mt-3">
+            Values are explainable ranges (not ML predictions) used to compare simple choices.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card app-card mt-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="h6 mb-1">Created plans</div>
+          <div class="muted small">Keep this list short in Sprint 1.</div>
+        </div>
+        <span class="badge text-bg-light">Mock</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr class="small text-muted">
+              <th>Plan ID</th><th>Zone</th><th>Intervention</th><th>Status</th><th>Expected impact</th>
+            </tr>
+          </thead>
+
+          <!-- Hook point -->
+          <tbody id="plansTable">
+            <tr>
+              <td>#P201</td><td>Zone A</td><td>Quiet hours policy</td>
+              <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
+              <td>2–5 dB</td>
+            </tr>
+            <tr>
+              <td>#P202</td><td>Zone C</td><td>Scheduling changes</td>
+              <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
+              <td>1–3 dB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="small text-muted mt-3">
+        Sprint 2 can add scenario comparison (multiple interventions, budgets, coverage).
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Tooltips (Sprint 2 buttons)
+  (function(){
+    const triggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    if (window.bootstrap) triggers.forEach(el => new bootstrap.Tooltip(el));
+  })();
+
+  // Seeded intervention details (simple + explainable)
+  const details = {
+    signage:       { cost: "Low",    feas: "High (0.85)",   impact: "0.5–1.5 dB" },
+    barriers:      { cost: "High",   feas: "Medium (0.55)", impact: "3–7 dB" },
+    schedule:      { cost: "Low",    feas: "High (0.80)",   impact: "1–3 dB" },
+    "quiet-hours": { cost: "Low",    feas: "Medium (0.65)", impact: "2–5 dB" },
+    maintenance:   { cost: "High",   feas: "Medium (0.50)", impact: "2–4 dB" },
+    enforcement:   { cost: "Medium", feas: "Medium (0.60)", impact: "1–2 dB" }
+  };
+
+  const interventionEl = document.getElementById('intervention');
+  const costBandEl = document.getElementById('costBand');
+  const feasibilityEl = document.getElementById('feasibility');
+  const impactEl = document.getElementById('impact');
+
+  function updateDetails() {
+    const key = interventionEl.value;
+    if (!key || !details[key]) {
+      costBandEl.textContent = "—";
+      feasibilityEl.textContent = "—";
+      impactEl.textContent = "—";
+      return;
+    }
+    costBandEl.textContent = details[key].cost;
+    feasibilityEl.textContent = details[key].feas;
+    impactEl.textContent = details[key].impact;
+  }
+  interventionEl.addEventListener('change', updateDetails);
+  updateDetails();
+
+  // Prototype submit behaviour (remove preventDefault when backend is ready)
+  const form = document.getElementById('planForm');
+  const confirmation = document.getElementById('planConfirmation');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    confirmation.classList.add('d-none');
+
+    const zone = document.getElementById('zone');
+    let ok = true;
+    [zone, interventionEl].forEach(el => {
+      if (!el.value) { ok = false; el.classList.add('is-invalid'); }
+      else el.classList.remove('is-invalid');
+    });
+    if (!ok) return;
+
+    confirmation.classList.remove('d-none');
+
+    // Add a row for demo
+    const table = document.getElementById('plansTable');
+    const tr = document.createElement('tr');
+    const text = interventionEl.options[interventionEl.selectedIndex].text;
+    const imp = details[interventionEl.value]?.impact || "—";
+    tr.innerHTML = `
+      <td>#P${Math.floor(300 + Math.random() * 200)}</td>
+      <td>${zone.value}</td>
+      <td>${text}</td>
+      <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
+      <td>${imp}</td>
+    `;
+    table.prepend(tr);
+    form.reset();
+    updateDetails();
+  });
+
+  ['zone','intervention'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('change', () => el.classList.remove('is-invalid'));
+  });
+</script>
+{% endblock %}

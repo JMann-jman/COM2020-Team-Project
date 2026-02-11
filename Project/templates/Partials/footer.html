@@ -1,0 +1,58 @@
+<footer class="app-footer mt-auto">
+  <div class="container py-5">
+
+    <div class="row g-4">
+
+      <!-- Brand / Trust -->
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="brand-mark">NE</span>
+          <span class="fw-semibold text-white fs-5">Noise Explorer</span>
+        </div>
+
+        <p class="text-white-50 small mb-3">
+          A prototype platform for understanding neighbourhood noise using
+          zone-level, anonymised data.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2">
+          <span class="footer-badge"><i class="bi bi-shield-lock me-1"></i> Privacy-first</span>
+          <span class="footer-badge"><i class="bi bi-geo-alt me-1"></i> Zone-level only</span>
+          <span class="footer-badge"><i class="bi bi-database me-1"></i> Synthetic data</span>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="col-lg-4">
+        <div class="footer-title">Quick links</div>
+        <ul class="list-unstyled footer-links mb-0">
+          <li><a href="{{ url_for('explore') }}"><i class="bi bi-graph-up me-2"></i>Explore trends</a></li>
+          <li><a href="{{ url_for('report') }}"><i class="bi bi-megaphone me-2"></i>Report incident</a></li>
+          <li><a href="{{ url_for('hotspots') }}"><i class="bi bi-fire me-2"></i>View hotspots</a></li>
+          <li><a href="{{ url_for('plan') }}"><i class="bi bi-kanban me-2"></i>Mitigation planner</a></li>
+          <li><a href="{{ url_for('quest') }}"><i class="bi bi-trophy me-2"></i>Quiet Quest</a></li>
+        </ul>
+      </div>
+
+      <!-- About -->
+      <div class="col-lg-4 text-lg-end">
+        <div class="footer-title">About this prototype</div>
+        <p class="text-white-50 small mb-2">
+          Educational prototype for coursework (Sprint 1).
+        </p>
+        <p class="text-white-50 small mb-0">
+          Explainable rules · Accessibility-aware UI · No real-time monitoring
+        </p>
+      </div>
+
+    </div>
+
+    <hr class="footer-divider my-4">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span class="text-white-50 small">© Noise Explorer · Project 10</span>
+      <span class="text-white-50 small">University coursework · Not for real-world deployment</span>
+    </div>
+
+  </div>
+</footer>

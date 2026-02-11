@@ -1,0 +1,103 @@
+<!-- templates/moderate.html -->
+{% extends "base.html" %}
+{% block title %}Moderate · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <span class="pill pill-dark"><i class="bi bi-shield-check me-1"></i>Planner view</span>
+      <h1 class="h2 fw-bold mb-1 mt-2">Moderation Panel</h1>
+      <p class="muted mb-0">Review incident reports and mark them as valid, duplicate, or invalid (with reasons).</p>
+    </div>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <div class="alert alert-light border d-flex gap-2 align-items-start mb-3">
+    <i class="bi bi-info-circle"></i>
+    <div class="small">
+      Moderation decisions affect hotspot detection and planning. Reasons are recorded for transparency.
+    </div>
+  </div>
+
+  <div class="card app-card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="h6 mb-1">Incident reports</div>
+          <div class="muted small">Table is a hook point for backend-rendered data.</div>
+        </div>
+        <span class="badge text-bg-light">Prototype v0.1</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="table-light">
+            <tr class="small text-muted">
+              <th>ID</th><th>Zone</th><th>Time window</th><th>Category</th><th>Severity</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+
+          <!-- Hook point -->
+          <tbody id="reportsTable">
+            <tr>
+              <td>#R102</td><td>Zone A</td><td>Evening</td><td>Nightlife</td><td>High</td>
+              <td><span class="badge bg-warning-subtle text-warning">Under review</span></td>
+              <td>
+                <button class="btn btn-sm btn-success me-1" type="button">Valid</button>
+                <button class="btn btn-sm btn-outline-secondary me-1" type="button">Duplicate</button>
+                <button class="btn btn-sm btn-outline-danger" type="button">Invalid</button>
+              </td>
+            </tr>
+            <tr>
+              <td>#R103</td><td>Zone C</td><td>Morning</td><td>Construction</td><td>Medium</td>
+              <td><span class="badge bg-warning-subtle text-warning">Under review</span></td>
+              <td>
+                <button class="btn btn-sm btn-success me-1" type="button">Valid</button>
+                <button class="btn btn-sm btn-outline-secondary me-1" type="button">Duplicate</button>
+                <button class="btn btn-sm btn-outline-danger" type="button">Invalid</button>
+              </td>
+            </tr>
+            <tr>
+              <td>#R104</td><td>Zone B</td><td>Night</td><td>Traffic</td><td>Low</td>
+              <td><span class="badge bg-success-subtle text-success">Validated</span></td>
+              <td class="text-muted small">Reviewed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card app-card mt-3">
+    <div class="card-body">
+      <div class="h6 mb-2">Decision reason (for selected report)</div>
+      <div class="row g-2">
+        <div class="col-md-5">
+          <select class="form-select" id="decision_reason" name="decision_reason">
+            <option selected disabled>Select reason</option>
+            <option>Matches existing report (same zone + time)</option>
+            <option>Insufficient information</option>
+            <option>Outside scope</option>
+            <option>Valid and relevant</option>
+          </select>
+        </div>
+        <div class="col-md-7">
+          <input class="form-control" id="decision_notes" name="decision_notes"
+                 placeholder="Optional notes (auditable, not public).">
+        </div>
+      </div>
+      <div class="small text-muted mt-2">
+        In Sprint 2 this will be tied to a selected row + saved in the moderation log.
+      </div>
+    </div>
+  </div>
+
+  <div class="d-grid d-lg-flex justify-content-lg-end mt-3">
+    <a class="btn btn-dark btn-pill" href="{{ url_for('hotspots') }}">
+      <i class="bi bi-fire me-1"></i>View updated hotspots
+    </a>
+  </div>
+</main>
+{% endblock %}

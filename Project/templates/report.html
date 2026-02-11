@@ -1,0 +1,168 @@
+<!-- templates/report.html -->
+{% extends "base.html" %}
+{% block title %}Report · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level only</span>
+        <span class="pill pill-soft"><i class="bi bi-shield-lock me-1"></i>Privacy notice</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Report a Noise Incident</h1>
+      <p class="muted mb-0">Submit an anonymised incident report to help planners understand noise issues.</p>
+    </div>
+
+    <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">
+      <i class="bi bi-arrow-left me-1"></i>Back to Explore
+    </a>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <div class="alert alert-light border d-flex gap-2 align-items-start mb-3">
+    <i class="bi bi-exclamation-triangle"></i>
+    <div class="small">
+      <strong>Privacy notice:</strong> Do not include names, addresses, phone numbers, licence plates, or identifying details.
+      Reports are collected at <strong>zone-level only</strong>.
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card app-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Incident details</div>
+              <div class="muted small">Fields marked * are required.</div>
+            </div>
+            <span class="badge text-bg-light">Prototype v0.1</span>
+          </div>
+
+          <form id="reportForm" method="post" action="{{ url_for('report') }}" novalidate>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="zone">Zone *</label>
+                <select class="form-select" id="zone" name="zone" required>
+                  <option value="" selected disabled>Select a zone</option>
+                  <option>Zone A</option><option>Zone B</option><option>Zone C</option><option>Zone D</option>
+                  <option>Zone E</option><option>Zone F</option><option>Zone G</option><option>Zone H</option>
+                  <option>Zone I</option><option>Zone J</option><option>Zone K</option><option>Zone L</option>
+                </select>
+                <div class="invalid-feedback">Please select a zone.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="time_window">Time window *</label>
+                <select class="form-select" id="time_window" name="time_window" required>
+                  <option value="" selected disabled>Select a time window</option>
+                  <option>Morning</option><option>Afternoon</option><option>Evening</option><option>Night</option>
+                </select>
+                <div class="invalid-feedback">Please select a time window.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="category">Category *</label>
+                <select class="form-select" id="category" name="category" required>
+                  <option value="" selected disabled>Select a category</option>
+                  <option>Traffic</option><option>Nightlife</option><option>Construction</option><option>General</option>
+                </select>
+                <div class="invalid-feedback">Please select a category.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="severity">Perceived severity *</label>
+                <select class="form-select" id="severity" name="severity" required>
+                  <option value="" selected disabled>Select severity</option>
+                  <option>Low</option><option>Medium</option><option>High</option>
+                </select>
+                <div class="invalid-feedback">Please select severity.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold" for="description">Description (optional)</label>
+                <textarea class="form-control" id="description" name="description" rows="4"
+                          placeholder="Briefly describe the noise issue (avoid personal details)."></textarea>
+                <div class="small text-muted mt-1">
+                  Keep this general. Example: “Loud music for ~30 minutes near residential area.”
+                </div>
+              </div>
+
+              <div class="col-12 d-flex flex-wrap gap-2">
+                <button class="btn btn-dark btn-pill" type="submit">
+                  <i class="bi bi-send me-1"></i>Submit report
+                </button>
+                <button class="btn btn-outline-secondary btn-pill" type="reset">
+                  <i class="bi bi-x-circle me-1"></i>Clear
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div id="reportSuccess" class="alert alert-success mt-4 d-none" role="status">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            Report submitted (prototype). A planner will review it for validity/duplication.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card app-card mb-3">
+        <div class="card-body">
+          <div class="h6 mb-2">What happens next?</div>
+          <ol class="small text-muted mb-0 ps-3">
+            <li>Your report is stored with a zone + time window + category.</li>
+            <li>A planner reviews it and marks it valid/duplicate/invalid.</li>
+            <li>Validated reports help update hotspot rankings.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card app-card">
+        <div class="card-body">
+          <div class="h6 mb-2">Why we don’t ask for exact location</div>
+          <div class="small text-muted">
+            To protect privacy, the system avoids collecting addresses or identifiable places.
+            Decisions are made using zone-level trends and aggregated evidence.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Lightweight client-side validation for prototype demo (does not replace backend validation)
+  (function () {
+    const form = document.getElementById('reportForm');
+    const success = document.getElementById('reportSuccess');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      // If backend is enabled, remove the next two lines.
+      e.preventDefault();
+      e.stopPropagation();
+
+      let ok = true;
+      ['zone','time_window','category','severity'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value) { ok = false; el.classList.add('is-invalid'); }
+        else el.classList.remove('is-invalid');
+      });
+
+      if (ok) {
+        success.classList.remove('d-none');
+        form.reset();
+      }
+    });
+
+    ['zone','time_window','category','severity'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('change', () => el.classList.remove('is-invalid'));
+    });
+  })();
+</script>
+{% endblock %}

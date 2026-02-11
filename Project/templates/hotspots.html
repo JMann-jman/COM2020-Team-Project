@@ -1,0 +1,144 @@
+<!-- templates/hotspots.html -->
+{% extends "base.html" %}
+{% block title %}Hotspots · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="pill pill-soft"><i class="bi bi-database me-1"></i>Synthetic & anonymised</span>
+        <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level only</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Hotspot Insights</h1>
+      <p class="muted mb-0">Zones ranked by severity to help prioritise mitigation actions.</p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center">
+      <label class="muted small mb-0" for="window">Time window</label>
+      <select class="form-select" id="window" name="time_window" style="min-width:180px;">
+        <option>Last 24 hours</option>
+        <option selected>Last 7 days</option>
+        <option>Last 4 weeks</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<main class="container pb-5">
+
+  <div class="card app-card mb-3">
+    <div class="card-body d-flex gap-3 align-items-start">
+      <div class="badge-icon bg-soft-amber flex-shrink-0"><i class="bi bi-lightbulb"></i></div>
+      <div>
+        <div class="h6 mb-1">How hotspots are calculated (Sprint 1)</div>
+        <div class="small text-muted mb-1">
+          Explainable, rule-based severity scoring with zone-level aggregation.
+        </div>
+        <div class="small">
+          <strong>Severity score</strong> = (Average noise dB in window) + (Validated report count × 0.8)
+          <span class="text-muted">· Prioritises consistent noise + validated incidents.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Hotspot ranking</div>
+              <div class="muted small">Backend will render rows here (hook point).</div>
+            </div>
+            <span class="badge text-bg-light">Mock</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr class="small text-muted">
+                  <th>Rank</th><th>Zone</th><th>Severity</th><th>Driver</th><th></th>
+                </tr>
+              </thead>
+              <!-- Hook point -->
+              <tbody id="hotspotTable">
+                <tr>
+                  <td class="fw-semibold">1</td><td>Zone A</td>
+                  <td><span class="badge bg-danger-subtle text-danger">78.4</span></td>
+                  <td class="small">High avg dB + many validated reports</td>
+                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">2</td><td>Zone C</td>
+                  <td><span class="badge bg-warning-subtle text-warning">71.2</span></td>
+                  <td class="small">Construction peaks in mornings</td>
+                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">3</td><td>Zone B</td>
+                  <td><span class="badge bg-warning-subtle text-warning">69.6</span></td>
+                  <td class="small">Traffic noise in evening window</td>
+                  <td class="text-end"><a class="btn btn-sm btn-outline-secondary btn-pill" href="{{ url_for('explore') }}">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small text-muted mt-3">
+            Hotspots update after moderation decisions (valid/duplicate/invalid).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card app-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Incidents per zone</div>
+              <div class="muted small">Secondary visualisation (placeholder)</div>
+            </div>
+            <span class="badge text-bg-light">Placeholder</span>
+          </div>
+
+          <div id="incidentsChart" class="chart-placeholder">
+            <div class="muted small">Bar chart placeholder (validated reports per zone).</div>
+          </div>
+
+          <div class="small text-muted mt-3">
+            Sprint 1: keep this simple—one supporting chart is enough.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card app-card mt-3">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <div class="h6 mb-1">Next step</div>
+        <div class="muted small">Create a mitigation plan for a hotspot zone.</div>
+      </div>
+      <a class="btn btn-dark btn-pill" href="{{ url_for('plan') }}">
+        <i class="bi bi-lightning-charge me-1"></i>Go to Mitigation Planner
+      </a>
+    </div>
+  </div>
+</main>
+
+<style>
+  .chart-placeholder{
+    height: 260px;
+    border-radius: 16px;
+    border: 1px dashed rgba(15,23,42,0.18);
+    background: rgba(255,255,255,0.6);
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    text-align: center;
+  }
+</style>
+{% endblock %}

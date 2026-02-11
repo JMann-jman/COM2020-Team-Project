@@ -1,0 +1,159 @@
+<!-- templates/quest.html -->
+{% extends "base.html" %}
+{% block title %}Quiet Quest · Noise Explorer{% endblock %}
+
+{% block content %}
+<header class="container py-4 py-lg-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="pill pill-soft"><i class="bi bi-controller me-1"></i>Community mode</span>
+        <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level only</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Quiet Quest</h1>
+      <p class="muted mb-0">Short missions that encourage noise-aware behaviour using trends and mitigation tips.</p>
+    </div>
+
+    <div class="text-lg-end">
+      <div class="muted small mb-1">Tier 1 progress</div>
+      <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+        <div class="progress" style="width: 180px; height: 10px;">
+          <div class="progress-bar" role="progressbar" style="width: 33%;"
+               aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <span class="badge text-bg-light">2 / 6</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container pb-5">
+  <div class="card app-card mb-3">
+    <div class="card-body d-flex gap-3 align-items-start">
+      <div class="badge-icon bg-soft-blue flex-shrink-0"><i class="bi bi-lightbulb"></i></div>
+      <div>
+        <div class="h6 mb-1">Why Quiet Quest exists</div>
+        <div class="muted small">
+          A lightweight engagement mode required by the specification. Tier 1 is included in Sprint 1;
+          Tier 2 and Tier 3 missions expand in Sprint 2.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card app-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="h6 mb-1">Tier 1 missions</div>
+              <div class="muted small">Mock progress (Sprint 1)</div>
+            </div>
+            <span class="badge text-bg-light">Prototype</span>
+          </div>
+
+          <div class="list-group list-group-flush">
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Mission 1: Find the noisiest time window
+                  </div>
+                  <div class="muted small">In <strong>Explore</strong>, identify the highest average dB window for a zone.</div>
+                </div>
+                <span class="badge bg-success-subtle text-success">Completed</span>
+              </div>
+              <div class="small text-muted mt-2">Tip: Use the “Peak time” summary card.</div>
+            </div>
+
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Mission 2: Identify a likely hotspot zone
+                  </div>
+                  <div class="muted small">In <strong>Hotspots</strong>, note the top ranked zone and explain why it ranks high.</div>
+                </div>
+                <span class="badge bg-success-subtle text-success">Completed</span>
+              </div>
+              <div class="small text-muted mt-2">Tip: Read the “How hotspots are calculated” box.</div>
+            </div>
+
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 3: Suggest one mitigation idea</div>
+                  <div class="muted small">Choose one intervention in <strong>Plan</strong> for a hotspot zone.</div>
+                </div>
+                <span class="badge bg-light text-muted">Not started</span>
+              </div>
+            </div>
+
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 4: Compare sensor vs report patterns</div>
+                  <div class="muted small">In <strong>Explore</strong>, switch the source filter and describe the difference.</div>
+                </div>
+                <span class="badge bg-light text-muted">Not started</span>
+              </div>
+            </div>
+
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 5: Learn a privacy-safe reporting rule</div>
+                  <div class="muted small">Open <strong>Report</strong> and identify one example of forbidden personal data.</div>
+                </div>
+                <span class="badge bg-light text-muted">Not started</span>
+              </div>
+            </div>
+
+            <div class="list-group-item py-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 6: Plan a small improvement</div>
+                  <div class="muted small">Create a plan and explain the expected impact range.</div>
+                </div>
+                <span class="badge bg-light text-muted">Not started</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="small text-muted mt-3">
+            Sprint 2: expand to Tier 2 and Tier 3 with more missions and answer keys.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card app-card mb-3">
+        <div class="card-body">
+          <div class="h6 mb-2">Quick links</div>
+          <div class="d-grid gap-2">
+            <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('explore') }}"><i class="bi bi-graph-up me-1"></i>Explore</a>
+            <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('hotspots') }}"><i class="bi bi-fire me-1"></i>Hotspots</a>
+            <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('plan') }}"><i class="bi bi-kanban me-1"></i>Plan</a>
+            <a class="btn btn-outline-secondary btn-pill" href="{{ url_for('report') }}"><i class="bi bi-megaphone me-1"></i>Report</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card app-card">
+        <div class="card-body">
+          <div class="h6 mb-2">Tier roadmap</div>
+          <ul class="muted small mb-0 ps-3">
+            <li><strong>Tier 1 (Sprint 1):</strong> basic missions + progress.</li>
+            <li><strong>Tier 2 (Sprint 2):</strong> more missions + answer keys.</li>
+            <li><strong>Tier 3 (Sprint 2):</strong> mitigation-focused missions + optional leaderboard.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

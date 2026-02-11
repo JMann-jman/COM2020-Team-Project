@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top">
+  <div class="container-fluid">
+
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+      <span class="brand-mark">NE</span>
+      <span class="fw-semibold">Noise Explorer</span>
+    </a>
+
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links -->
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('explore') }}">
+            <i class="bi bi-graph-up me-1"></i> Explore
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('report') }}">
+            <i class="bi bi-megaphone me-1"></i> Report
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('moderate') }}">
+            <i class="bi bi-shield-check me-1"></i> Moderate
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('hotspots') }}">
+            <i class="bi bi-fire me-1"></i> Hotspots
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('plan') }}">
+            <i class="bi bi-kanban me-1"></i> Plan
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('quest') }}">
+            <i class="bi bi-trophy me-1"></i> Quiet Quest
+          </a>
+        </li>
+
+        <!-- CTA buttons -->
+        <li class="nav-item ms-lg-3">
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('report') }}">
+            + New Report
+          </a>
+        </li>
+
+        <li class="nav-item ms-lg-2">
+          <a class="btn btn-light btn-sm fw-semibold" href="{{ url_for('plan') }}">
+            ⚡ Create Plan
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
