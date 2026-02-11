@@ -24,7 +24,8 @@ def success_measures():
     # Hotspot validity: Fraction of hotspots that align with top 5 high-noise zones
     high_noise_zones = observations.groupby('zone_id')['value_db'].mean().nlargest(5).index.tolist()
     hotspot_zones = hotspots['zone_id'].tolist()
-    hotspot_validity = len(set(high_noise_zones) & set(hotspot_zones)) / len(hotspot_zones)
+    # Avoid division by zero
+    hotspot_validity = len(set(high_noise_zones) & set(hotspot_zones)) / len(hotspot_zones) if len(hotspot_zones) > 0 else 0
 
     # Reporting quality: Ratio of duplicate decisions to total moderation decisions
     duplicate_decisions = decisions[decisions['decision'] == 'duplicate']

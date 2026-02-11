@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from ..auth import check_role
 from .. import data_loader
+from ..utils import generate_id, save_csv, build_csv_path
 
 report_bp = Blueprint('report', __name__)
 
@@ -80,7 +81,7 @@ def submit_report():
         return jsonify({'message': 'Duplicate report flagged', 'is_duplicate': True}), 409
 
     new_report = pd.DataFrame({
-        'report_id': [f'R{len(data_loader.reports)+1:03d}'],
+        'report_id': [generate_id('R', data_loader.reports)],
         'zone_id': [zone],
         'timestamp': [datetime.now()],
         'category': [category],
@@ -88,7 +89,7 @@ def submit_report():
         'status': ['pending']
     })
     data_loader.reports = pd.concat([data_loader.reports, new_report], ignore_index=True)
-    data_loader.reports.to_csv(os.path.join(data_loader.DATA_DIR, 'incident_reports.csv'), index=False)
+    save_csv(data_loader.reports, build_csv_path(data_loader.DATA_DIR, 'incident_reports.csv'))
     return jsonify({'message': 'Report submitted', 'is_duplicate': False}), 201
 
 @report_bp.route('/reports/<report_id>', methods=['PUT'])
@@ -114,13 +115,13 @@ def moderate_report(report_id):
 
     data_loader.reports.loc[data_loader.reports['report_id'] == report_id, 'status'] = decision
     new_decision = pd.DataFrame({
-        'decision_id': [f'D{len(data_loader.decisions)+1:03d}'],
+        'decision_id': [generate_id('MOD', data_loader.decisions)],
         'report_id': [report_id],
         'decision': [decision],
         'reason': [reason],
         'timestamp': [datetime.now()]
     })
     data_loader.decisions = pd.concat([data_loader.decisions, new_decision], ignore_index=True)
-    data_loader.decisions.to_csv(os.path.join(data_loader.DATA_DIR, 'moderation_decisions.csv'), index=False)
-    data_loader.reports.to_csv(os.path.join(data_loader.DATA_DIR, 'incident_reports.csv'), index=False)
+    save_csv(data_loader.decisions, build_csv_path(data_loader.DATA_DIR, 'moderation_decisions.csv'))
+    save_csv(data_loader.reports, build_csv_path(data_loader.DATA_DIR, 'incident_reports.csv'))
     return jsonify({'message': 'Moderated'}), 200

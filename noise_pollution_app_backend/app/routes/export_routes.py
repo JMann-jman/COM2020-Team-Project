@@ -4,7 +4,7 @@ Routes for data exports in the Noise Pollution Monitoring API.
 This module defines blueprints for exporting data as CSV or PDF.
 """
 
-from flask import Blueprint, request, send_file
+from flask import Blueprint, request, send_file, jsonify
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -25,14 +25,14 @@ def export_csv():
         CSV file download.
     """
     if not check_role('community'):
-        return {'error': 'Unauthorized'}, 403
+        return jsonify({'error': 'Unauthorized'}), 403
     data_type = request.args.get('type', 'observations')
     if data_type == 'observations':
         data = observations
     elif data_type == 'reports':
         data = reports
     else:
-        return {'error': 'Invalid type'}, 400
+        return jsonify({'error': 'Invalid type'}), 400
     csv_data = data.to_csv(index=False)
     return send_file(io.BytesIO(csv_data.encode()), mimetype='text/csv', as_attachment=True, download_name=f'{data_type}.csv')
 
@@ -48,14 +48,14 @@ def export_pdf():
         PDF file download.
     """
     if not check_role('community'):
-        return {'error': 'Unauthorized'}, 403
+        return jsonify({'error': 'Unauthorized'}), 403
     data_type = request.args.get('type', 'observations')
     if data_type == 'observations':
         data = observations.head(10)
     elif data_type == 'reports':
         data = reports.head(10)
     else:
-        return {'error': 'Invalid type'}, 400
+        return jsonify({'error': 'Invalid type'}), 400
 
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)

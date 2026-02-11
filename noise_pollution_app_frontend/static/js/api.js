@@ -94,10 +94,15 @@ const API = {
    * Create a new intervention plan
    */
   createPlan(data) {
-    this.role = 'planner'; // Planner role required
-    return this.request('/plans', {
+    const originalRole = this.role;
+    this.role = 'planner';
+    const promise = this.request('/plans', {
       method: 'POST',
       body: JSON.stringify(data)
+    });
+    // Restore original role after request
+    return promise.finally(() => {
+      this.role = originalRole;
     });
   },
 

@@ -9,6 +9,7 @@ import os
 from flask import Blueprint, request, jsonify
 from ..auth import check_role
 from .. import data_loader
+from ..utils import generate_id, save_csv, build_csv_path
 
 plan_bp = Blueprint('plan', __name__)
 
@@ -53,8 +54,17 @@ def create_plan():
     if not check_role('planner'):
         return jsonify({'error': 'Unauthorized'}), 403
     data = request.json
+    
+    # Validate required fields
+    if not data or 'zone_id' not in data or 'interventions' not in data:
+        return jsonify({'error': 'Missing required fields: zone_id and interventions'}), 400
+    
     zone_id = data['zone_id']
     interventions_selected = data['interventions']
+    
+    if not interventions_selected or not isinstance(interventions_selected, list):
+        return jsonify({'error': 'interventions must be a non-empty list'}), 400
+    
     notes = data.get('notes', '')
 
     selected = data_loader.interventions[data_loader.interventions['intervention_id'].isin(interventions_selected)]
@@ -62,7 +72,7 @@ def create_plan():
     impact = selected['impact_range_db'].str.split('-').apply(lambda x: (float(x[0]) + float(x[1])) / 2).sum()
 
     new_plan = pd.DataFrame({
-        'plan_id': [f'P{len(data_loader.plans)+1:03d}'],
+        'plan_id': [generate_id('P', data_loader.plans)],
         'zone_id': [zone_id],
         'interventions_selected': [interventions_selected],
         'budget': [cost],
@@ -72,7 +82,7 @@ def create_plan():
         'notes': [notes]
     })
     data_loader.plans = pd.concat([data_loader.plans, new_plan], ignore_index=True)
-    data_loader.plans.to_csv(os.path.join(data_loader.DATA_DIR, 'plans.csv'), index=False)
+    save_csv(data_loader.plans, build_csv_path(data_loader.DATA_DIR, 'plans.csv'))
     return jsonify({'message': 'Plan created', 'plan_id': new_plan['plan_id'].iloc[0]}), 201
 
 @plan_bp.route('/plans/<plan_id>', methods=['PUT'])
@@ -99,8 +109,31 @@ def update_plan_status(plan_id):
     data_loader.plans.loc[data_loader.plans['plan_id'] == plan_id, 'status'] = status
     if notes:
         data_loader.plans.loc[data_loader.plans['plan_id'] == plan_id, 'notes'] = notes
-    data_loader.plans.to_csv(os.path.join(data_loader.DATA_DIR, 'plans.csv'), index=False)
+    save_csv(data_loader.plans, build_csv_path(data_loader.DATA_DIR, 'plans.csv'))
     return jsonify({'message': 'Plan updated'}), 200
+
+def _calculate_plan_comparison(plan_ids):
+    """
+    Calculate comparison metrics for multiple plans.
+    
+    Args:
+        plan_ids (list): List of plan IDs to compare.
+    
+    Returns:
+        dict: Comparison metrics and plan details.
+    """
+    scenario_plans = data_loader.plans[data_loader.plans['plan_id'].isin(plan_ids)]
+    
+    # Avoid division by zero
+    total_zones = len(data_loader.zones) if len(data_loader.zones) > 0 else 1
+    coverage = float(len(scenario_plans) / total_zones * 100) if len(data_loader.zones) > 0 else 0.0
+    
+    return {
+        'plans': scenario_plans.to_dict(orient='records'),
+        'total_cost': float(scenario_plans['budget'].sum()),
+        'total_impact': float(scenario_plans['expected_impact'].sum()),
+        'coverage': coverage
+    }
 
 @plan_bp.route('/plans/compare', methods=['GET'])
 def compare_plans():
@@ -116,14 +149,7 @@ def compare_plans():
     if not check_role('planner'):
         return jsonify({'error': 'Unauthorized'}), 403
     plan_ids = request.args.getlist('plan_ids')
-
-    scenario_plans = data_loader.plans[data_loader.plans['plan_id'].isin(plan_ids)]
-    return jsonify({
-        'plans': scenario_plans.to_dict(orient='records'),
-        'total_cost': float(scenario_plans['budget'].sum()),
-        'total_impact': float(scenario_plans['expected_impact'].sum()),
-        'coverage': float(len(scenario_plans) / len(data_loader.zones) * 100)
-    }), 200
+    return jsonify(_calculate_plan_comparison(plan_ids)), 200
 
 @plan_bp.route('/scenarios', methods=['POST'])
 def compare_scenarios():
@@ -140,14 +166,10 @@ def compare_scenarios():
         return jsonify({'error': 'Unauthorized'}), 403
     data = request.json
     plan_ids = data['plan_ids']
-
-    scenario_plans = data_loader.plans[data_loader.plans['plan_id'].isin(plan_ids)]
-    total_cost = scenario_plans['budget'].sum()
-    total_impact = scenario_plans['expected_impact'].sum()
-    coverage = len(scenario_plans) / len(data_loader.zones) * 100
+    comparison = _calculate_plan_comparison(plan_ids)
     return jsonify({
-        'total_cost': total_cost,
-        'total_impact': total_impact,
-        'coverage': coverage
+        'total_cost': comparison['total_cost'],
+        'total_impact': comparison['total_impact'],
+        'coverage': comparison['coverage']
     }), 200
 

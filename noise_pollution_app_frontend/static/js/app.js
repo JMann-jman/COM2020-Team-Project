@@ -2,42 +2,63 @@
  * Main application JavaScript for Noise Pollution Monitoring App
  */
 
+/**
+ * Execute an API call with error handling
+ * @param {Function} apiFunction - The API function to call
+ * @param {string} errorMessage - Custom error message to display
+ * @returns {Promise} The API response data or null on error
+ */
+async function executeApiCall(apiFunction, errorMessage = 'Operation failed') {
+  try {
+    return await apiFunction();
+  } catch (error) {
+    console.error(errorMessage, error);
+    alert(errorMessage);
+    return null;
+  }
+}
+
+/**
+ * Load data from API and display it using provided display function
+ * @param {Function} apiFunction - The API call to execute
+ * @param {Function} displayFunction - The function to display the data
+ * @param {string} errorMessage - Custom error message
+ */
+async function loadAndDisplay(apiFunction, displayFunction, errorMessage = 'Failed to load data') {
+  const data = await executeApiCall(apiFunction, errorMessage);
+  if (data) {
+    displayFunction(data);
+  }
+}
+
 // Load zones and populate dropdowns
 async function loadZones() {
-  try {
-    // Create a mock zones endpoint response since the backend might not have this route yet
-    const zones = [
-      { zone_id: 'Z01', name: 'Zone 1' },
-      { zone_id: 'Z02', name: 'Zone 2' },
-      { zone_id: 'Z03', name: 'Zone 3' },
-      { zone_id: 'Z04', name: 'Zone 4' },
-      { zone_id: 'Z05', name: 'Zone 5' },
-      { zone_id: 'Z06', name: 'Zone 6' },
-      { zone_id: 'Z07', name: 'Zone 7' },
-      { zone_id: 'Z08', name: 'Zone 8' },
-      { zone_id: 'Z09', name: 'Zone 9' },
-      { zone_id: 'Z10', name: 'Zone 10' },
-      { zone_id: 'Z11', name: 'Zone 11' },
-      { zone_id: 'Z12', name: 'Zone 12' }
-    ];
-    
+  const zones = await executeApiCall(
+    () => API.getZones(),
+    'Failed to load zones'
+  );
+  if (zones) {
+    console.log('Zones loaded:', zones);
     populateZoneSelect(zones);
-    return zones;
-  } catch (error) {
-    console.error('Failed to load zones:', error);
+  } else {
+    console.warn('No zones returned from API');
   }
+  return zones;
 }
 
 // Populate zone select dropdowns
 function populateZoneSelect(zones) {
   const zoneSelects = document.querySelectorAll('select[name="zone"], select[id="zone"]');
+  console.log('Found zone selects:', zoneSelects.length);
   zoneSelects.forEach(select => {
+    console.log('Populating select:', select.id || select.name);
     zones.forEach(zone => {
       const option = document.createElement('option');
       option.value = zone.zone_id;
       option.textContent = zone.name;
       select.appendChild(option);
     });
+    console.log('Select now has', select.options.length, 'options');
   });
 }
 
@@ -48,13 +69,11 @@ async function loadExploreData() {
 
   if (!zone) return;
 
-  try {
-    const data = await API.getNoiseData({ zones: [zone] });
-    displayNoiseData(data);
-  } catch (error) {
-    console.error('Failed to load noise data:', error);
-    alert('Failed to load noise data');
-  }
+  await loadAndDisplay(
+    () => API.getNoiseData({ zones: [zone] }),
+    displayNoiseData,
+    'Failed to load noise data'
+  );
 }
 
 // Display noise data in table
@@ -86,13 +105,11 @@ function displayNoiseData(data) {
 
 // Load and display hotspots
 async function loadHotspots() {
-  try {
-    const data = await API.getHotspots(10);
-    displayHotspots(data);
-  } catch (error) {
-    console.error('Failed to load hotspots:', error);
-    alert('Failed to load hotspots');
-  }
+  await loadAndDisplay(
+    () => API.getHotspots(10),
+    displayHotspots,
+    'Failed to load hotspots'
+  );
 }
 
 // Display hotspots
@@ -141,33 +158,32 @@ async function submitIncidentReport(event) {
     return;
   }
 
-  try {
-    const result = await API.submitReport({
+  const result = await executeApiCall(
+    () => API.submitReport({
       zone_id: zone,
       category: category,
       description: description
-    });
-    
+    }),
+    'Failed to submit report'
+  );
+  
+  if (result) {
     if (result.is_duplicate) {
       alert('This report appears to be a duplicate of a recent report');
     } else {
       alert('Report submitted successfully!');
       event.target.reset();
     }
-  } catch (error) {
-    console.error('Failed to submit report:', error);
-    alert('Failed to submit report');
   }
 }
 
 // Load plans for comparison
 async function loadPlansForComparison() {
-  try {
-    const data = await API.getPlans();
-    displayPlansForSelection(data);
-  } catch (error) {
-    console.error('Failed to load plans:', error);
-  }
+  await loadAndDisplay(
+    () => API.getPlans(),
+    displayPlansForSelection,
+    'Failed to load plans'
+  );
 }
 
 // Display plans for selection
@@ -198,12 +214,13 @@ async function comparePlans() {
     return;
   }
 
-  try {
-    const comparison = await API.comparePlans(selected);
+  const comparison = await executeApiCall(
+    () => API.comparePlans(selected),
+    'Failed to compare plans'
+  );
+  
+  if (comparison) {
     displayPlanComparison(comparison);
-  } catch (error) {
-    console.error('Failed to compare plans:', error);
-    alert('Failed to compare plans');
   }
 }
 
