@@ -19,12 +19,13 @@ decisions = None
 hotspots = None
 interventions = None
 plans = None
+missions = None
 
 def load_data():
     """
     Load all CSV data into global variables.
     """
-    global zones, observations, reports, decisions, hotspots, interventions, plans
+    global zones, observations, reports, decisions, hotspots, interventions, plans, missions
     zones = pd.read_csv(os.path.join(DATA_DIR, 'zones.csv'))
     observations = pd.read_csv(os.path.join(DATA_DIR, 'noise_observations.csv'))
     reports = pd.read_csv(os.path.join(DATA_DIR, 'incident_reports.csv'))
@@ -32,3 +33,4 @@ def load_data():
     hotspots = pd.read_csv(os.path.join(DATA_DIR, 'hotspots.csv'))
     interventions = pd.read_csv(os.path.join(DATA_DIR, 'interventions.csv'))
     plans = pd.read_csv(os.path.join(DATA_DIR, 'plans.csv'))
+    missions = pd.read_csv(os.path.join(DATA_DIR, 'missions.csv'))
