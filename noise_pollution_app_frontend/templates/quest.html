@@ -11,126 +11,105 @@
         <span class="pill pill-dark"><i class="bi bi-geo-alt me-1"></i>Zone-level only</span>
       </div>
       <h1 class="h2 fw-bold mb-1">Quiet Quest</h1>
-      <p class="muted mb-0">Short missions that encourage noise-aware behaviour using trends and mitigation tips.</p>
+      <p class="muted mb-0">Complete missions that test your understanding of noise data, hotspots, and mitigation strategies.</p>
     </div>
 
     <div class="text-lg-end">
-      <div class="muted small mb-1">Tier 1 progress</div>
-      <div class="d-flex align-items-center gap-2 justify-content-lg-end">
-        <div class="progress" style="width: 180px; height: 10px;">
-          <div class="progress-bar" role="progressbar" style="width: 33%;"
-               aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <span class="badge text-bg-light">2 / 6</span>
-      </div>
+      <div class="muted small mb-1">Total completed</div>
+      <span class="badge text-bg-primary fs-6" id="total-completed">0</span>
+      <span class="muted small"> / 18</span>
     </div>
   </div>
 </header>
 
 <main class="container pb-5">
+  <!-- Info card -->
   <div class="card app-card mb-3">
     <div class="card-body d-flex gap-3 align-items-start">
       <div class="badge-icon bg-soft-blue flex-shrink-0"><i class="bi bi-lightbulb"></i></div>
       <div>
-        <div class="h6 mb-1">Why Quiet Quest exists</div>
+        <div class="h6 mb-1">How it works</div>
         <div class="muted small">
-          A lightweight engagement mode required by the specification. Tier 1 is included in Sprint 1;
-          Tier 2 and Tier 3 missions expand in Sprint 2.
+          Each tier has 6 missions based on real noise data. Answer correctly to earn progress and badges.
+          Complete a tier to unlock the next one. Use the Explore, Hotspots, and Plan pages to find answers.
         </div>
       </div>
     </div>
   </div>
 
   <div class="row g-3">
+    <!-- Main missions column -->
     <div class="col-lg-8">
-      <div class="card app-card">
+      <!-- Tier 1 -->
+      <div class="card app-card mb-3">
         <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <div class="h6 mb-1">Tier 1 missions</div>
-              <div class="muted small">Mock progress (Sprint 1)</div>
+              <div class="h6 mb-0"><i class="bi bi-1-circle me-1"></i>Tier 1 — Data Exploration</div>
+              <div class="muted small">Learn to read noise data and identify patterns</div>
             </div>
-            <span class="badge text-bg-light">Prototype</span>
-          </div>
-
-          <div class="list-group list-group-flush">
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
-                    Mission 1: Find the noisiest time window
-                  </div>
-                  <div class="muted small">In <strong>Explore</strong>, identify the highest average dB window for a zone.</div>
-                </div>
-                <span class="badge bg-success-subtle text-success">Completed</span>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress" style="width:120px;height:8px;">
+                <div class="progress-bar bg-success" id="tier1-bar" role="progressbar" style="width:0%"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
               </div>
-              <div class="small text-muted mt-2">Tip: Use the “Peak time” summary card.</div>
-            </div>
-
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
-                    Mission 2: Identify a likely hotspot zone
-                  </div>
-                  <div class="muted small">In <strong>Hotspots</strong>, note the top ranked zone and explain why it ranks high.</div>
-                </div>
-                <span class="badge bg-success-subtle text-success">Completed</span>
-              </div>
-              <div class="small text-muted mt-2">Tip: Read the “How hotspots are calculated” box.</div>
-            </div>
-
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 3: Suggest one mitigation idea</div>
-                  <div class="muted small">Choose one intervention in <strong>Plan</strong> for a hotspot zone.</div>
-                </div>
-                <span class="badge bg-light text-muted">Not started</span>
-              </div>
-            </div>
-
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 4: Compare sensor vs report patterns</div>
-                  <div class="muted small">In <strong>Explore</strong>, switch the source filter and describe the difference.</div>
-                </div>
-                <span class="badge bg-light text-muted">Not started</span>
-              </div>
-            </div>
-
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 5: Learn a privacy-safe reporting rule</div>
-                  <div class="muted small">Open <strong>Report</strong> and identify one example of forbidden personal data.</div>
-                </div>
-                <span class="badge bg-light text-muted">Not started</span>
-              </div>
-            </div>
-
-            <div class="list-group-item py-3">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div>
-                  <div class="fw-semibold"><i class="bi bi-circle me-1"></i>Mission 6: Plan a small improvement</div>
-                  <div class="muted small">Create a plan and explain the expected impact range.</div>
-                </div>
-                <span class="badge bg-light text-muted">Not started</span>
-              </div>
+              <span class="badge text-bg-light" id="tier1-label">0 / 6</span>
             </div>
           </div>
+          <div class="list-group list-group-flush" id="tier1-missions">
+            <div class="text-center py-3"><div class="spinner-border spinner-border-sm text-muted"></div></div>
+          </div>
+        </div>
+      </div>
 
-          <div class="small text-muted mt-3">
-            Sprint 2: expand to Tier 2 and Tier 3 with more missions and answer keys.
+      <!-- Tier 2 -->
+      <div class="card app-card mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <div class="h6 mb-0"><i class="bi bi-2-circle me-1"></i>Tier 2 — Analysis</div>
+              <div class="muted small">Compare zones, interventions, and severity levels</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress" style="width:120px;height:8px;">
+                <div class="progress-bar bg-warning" id="tier2-bar" role="progressbar" style="width:0%"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <span class="badge text-bg-light" id="tier2-label">0 / 6</span>
+            </div>
+          </div>
+          <div class="list-group list-group-flush" id="tier2-missions">
+            <div class="text-center py-3"><div class="spinner-border spinner-border-sm text-muted"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="card app-card mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <div class="h6 mb-0"><i class="bi bi-3-circle me-1"></i>Tier 3 — Mitigation Planning</div>
+              <div class="muted small">Plan interventions, evaluate trade-offs, and build scenarios</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress" style="width:120px;height:8px;">
+                <div class="progress-bar bg-danger" id="tier3-bar" role="progressbar" style="width:0%"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <span class="badge text-bg-light" id="tier3-label">0 / 6</span>
+            </div>
+          </div>
+          <div class="list-group list-group-flush" id="tier3-missions">
+            <div class="text-center py-3"><div class="spinner-border spinner-border-sm text-muted"></div></div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Sidebar -->
     <div class="col-lg-4">
+      <!-- Quick links -->
       <div class="card app-card mb-3">
         <div class="card-body">
           <div class="h6 mb-2">Quick links</div>
@@ -143,13 +122,24 @@
         </div>
       </div>
 
+      <!-- Badges -->
+      <div class="card app-card mb-3">
+        <div class="card-body">
+          <div class="h6 mb-2"><i class="bi bi-award me-1"></i>Badges</div>
+          <div id="badges-container">
+            <div class="text-center py-2"><div class="spinner-border spinner-border-sm text-muted"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier roadmap -->
       <div class="card app-card">
         <div class="card-body">
-          <div class="h6 mb-2">Tier roadmap</div>
+          <div class="h6 mb-2">How tiers work</div>
           <ul class="muted small mb-0 ps-3">
-            <li><strong>Tier 1 (Sprint 1):</strong> basic missions + progress.</li>
-            <li><strong>Tier 2 (Sprint 2):</strong> more missions + answer keys.</li>
-            <li><strong>Tier 3 (Sprint 2):</strong> mitigation-focused missions + optional leaderboard.</li>
+            <li><strong>Tier 1:</strong> Always open. Learn the basics of noise data.</li>
+            <li><strong>Tier 2:</strong> Unlocks after completing all 6 Tier 1 missions.</li>
+            <li><strong>Tier 3:</strong> Unlocks after completing all 6 Tier 2 missions.</li>
           </ul>
         </div>
       </div>
