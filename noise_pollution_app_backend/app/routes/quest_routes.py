@@ -2,7 +2,7 @@
 Routes for the Quiet Quest gamification feature.
 
 Provides endpoints for listing missions, submitting answers,
-and tracking user progress.
+and tracking user progress with badges.
 """
 
 from flask import Blueprint, request, jsonify
@@ -21,8 +21,57 @@ def _get_user_id():
 
 def _user_progress(user_id):
     if user_id not in _progress:
-        _progress[user_id] = {'completed': {}}
+        _progress[user_id] = {'completed': {}, 'badges': []}
     return _progress[user_id]
+
+
+# ---------- badge definitions ----------
+BADGES = [
+    {'id': 'tier1_complete', 'name': 'Noise Novice', 'description': 'Complete all Tier 1 missions', 'icon': 'bi-star', 'tier': 1, 'required': 6},
+    {'id': 'tier2_complete', 'name': 'Sound Analyst', 'description': 'Complete all Tier 2 missions', 'icon': 'bi-bar-chart', 'tier': 2, 'required': 6},
+    {'id': 'tier3_complete', 'name': 'Quiet Champion', 'description': 'Complete all Tier 3 missions', 'icon': 'bi-trophy', 'tier': 3, 'required': 6},
+    {'id': 'first_mission', 'name': 'First Step', 'description': 'Complete your first mission', 'icon': 'bi-flag', 'tier': 0, 'required': 1},
+    {'id': 'perfect_tier1', 'name': 'Sharp Ear', 'description': 'Answer all Tier 1 missions correctly on first try', 'icon': 'bi-bullseye', 'tier': 1, 'required': 6},
+]
+
+
+def _check_badges(user_id):
+    """Evaluate and award any newly earned badges."""
+    prog = _user_progress(user_id)
+    completed = prog['completed']
+    earned_ids = {b['id'] for b in prog['badges']}
+    newly_earned = []
+
+    # Count completions per tier
+    tier_counts = {1: 0, 2: 0, 3: 0}
+    first_try_tier1 = 0
+    for mid, info in completed.items():
+        tier = info.get('tier', 0)
+        if tier in tier_counts:
+            tier_counts[tier] += 1
+        if tier == 1 and info.get('first_try'):
+            first_try_tier1 += 1
+
+    total = sum(tier_counts.values())
+
+    for badge in BADGES:
+        if badge['id'] in earned_ids:
+            continue
+        if badge['id'] == 'first_mission' and total >= 1:
+            newly_earned.append(badge)
+        elif badge['id'] == 'tier1_complete' and tier_counts[1] >= 6:
+            newly_earned.append(badge)
+        elif badge['id'] == 'tier2_complete' and tier_counts[2] >= 6:
+            newly_earned.append(badge)
+        elif badge['id'] == 'tier3_complete' and tier_counts[3] >= 6:
+            newly_earned.append(badge)
+        elif badge['id'] == 'perfect_tier1' and first_try_tier1 >= 6:
+            newly_earned.append(badge)
+
+    for b in newly_earned:
+        prog['badges'].append(b)
+
+    return newly_earned
 
 
 # ---------- routes ----------
@@ -80,22 +129,29 @@ def submit_answer(mission_id):
     correct_answer = str(mission['answer_key']).strip()
     is_correct = user_answer == correct_answer
 
+    already_completed = mission_id in prog['completed']
+    first_try = not already_completed
+
     prog['completed'][mission_id] = {
         'correct': is_correct,
         'tier': int(mission['tier']),
+        'first_try': first_try and is_correct,
         'user_answer': user_answer,
     }
+
+    new_badges = _check_badges(user_id)
 
     return jsonify({
         'correct': is_correct,
         'correct_answer': correct_answer,
         'explanation': mission['explanation'],
+        'new_badges': new_badges,
     })
 
 
 @quest_bp.route('/quest/progress', methods=['GET'])
 def get_progress():
-    """Return the user's quest progress."""
+    """Return the user's quest progress and badges."""
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
 
@@ -110,8 +166,10 @@ def get_progress():
 
     return jsonify({
         'completed': prog['completed'],
+        'badges': prog['badges'],
         'tier_progress': {str(k): v for k, v in tier_counts.items()},
         'total_completed': sum(tier_counts.values()),
+        'all_badges': BADGES,
     })
 
 
@@ -119,5 +177,5 @@ def get_progress():
 def reset_progress():
     """Reset user's quest progress (useful for testing)."""
     user_id = _get_user_id()
-    _progress[user_id] = {'completed': {}}
+    _progress[user_id] = {'completed': {}, 'badges': []}
     return jsonify({'status': 'reset'})
