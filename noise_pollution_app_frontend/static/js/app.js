@@ -443,16 +443,18 @@ async function handleMissionAnswer(e) {
     });
   }
 
-  // Refresh progress bars
-  const [progress, missions] = await Promise.all([
-    executeApiCall(() => API.getQuestProgress(), ''),
-    executeApiCall(() => API.getMissions(), '')
-  ]);
-  if (progress) {
-    renderQuestProgress(progress);
-    renderBadges(progress);
-    if (missions) {
-      renderMissions(missions, progress);
+  // Refresh progress and re-render
+  if (result.correct) {
+    const [progress, missions] = await Promise.all([
+      executeApiCall(() => API.getQuestProgress(), ''),
+      executeApiCall(() => API.getMissions(), '')
+    ]);
+    if (progress) {
+      renderQuestProgress(progress);
+      renderBadges(progress);
+      if (missions) {
+        renderMissions(missions, progress);
+      }
     }
   }
 }
