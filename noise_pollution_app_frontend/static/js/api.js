@@ -126,5 +126,38 @@ const API = {
    */
   setRole(role) {
     this.role = role;
+  },
+
+  // ----- Quiet Quest endpoints -----
+
+  /**
+   * Get all missions grouped by tier
+   */
+  getMissions() {
+    return this.request('/missions');
+  },
+
+  /**
+   * Submit an answer for a mission
+   */
+  submitMissionAnswer(missionId, answer) {
+    return this.request(`/missions/${missionId}/answer`, {
+      method: 'POST',
+      body: JSON.stringify({ answer })
+    });
+  },
+
+  /**
+   * Get user quest progress and badges
+   */
+  getQuestProgress() {
+    return this.request('/quest/progress');
+  },
+
+  /**
+   * Reset quest progress (for testing)
+   */
+  resetQuestProgress() {
+    return this.request('/quest/reset', { method: 'POST' });
   }
 };
