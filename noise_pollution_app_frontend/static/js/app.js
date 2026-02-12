@@ -444,25 +444,15 @@ async function handleMissionAnswer(e) {
   }
 
   // Refresh progress bars
-  const progress = await executeApiCall(() => API.getQuestProgress(), '');
+  const [progress, missions] = await Promise.all([
+    executeApiCall(() => API.getQuestProgress(), ''),
+    executeApiCall(() => API.getMissions(), '')
+  ]);
   if (progress) {
     renderQuestProgress(progress);
     renderBadges(progress);
-  }
-
-  // If correct, update the mission item status
-  if (result.correct) {
-    const item = document.querySelector(`[data-mission-id="${missionId}"]`);
-    if (item) {
-      const statusSpan = item.querySelector('.badge');
-      if (statusSpan) {
-        statusSpan.className = 'badge bg-success-subtle text-success';
-        statusSpan.textContent = 'Correct';
-      }
-      const iconEl = item.querySelector('.fw-semibold i');
-      if (iconEl) {
-        iconEl.className = 'bi bi-check-circle-fill text-success me-1';
-      }
+    if (missions) {
+      renderMissions(missions, progress);
     }
   }
 }
