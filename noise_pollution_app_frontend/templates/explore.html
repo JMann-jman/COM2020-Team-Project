@@ -27,7 +27,7 @@
   <!-- Filters -->
   <div class="card app-card mb-3">
     <div class="card-body">
-      <form class="row g-3 align-items-end" method="get" action="{{ url_for('explore') }}">
+      <form id="exploreFilters" class="row g-3 align-items-end" method="get" action="{{ url_for('explore') }}">
         <div class="col-md-4">
           <label class="form-label fw-semibold" for="zone">Zone</label>
           <select class="form-select" id="zone" name="zone">

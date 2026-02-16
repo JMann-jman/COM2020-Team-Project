@@ -45,23 +45,55 @@ def get_noise_data():
         categories (list): List of category tags to filter by.
         start_date (str): Start date for filtering (ISO format).
         end_date (str): End date for filtering (ISO format).
+        source (str): Filter by source ('Sensor', 'Reports', or 'Both').
+        time_window (str): Preset time window ('Last 24 hours', 'Last 7 days', 'Last 4 weeks').
 
     Returns:
         JSON: List of filtered noise observations.
     """
+    from datetime import timedelta
+    
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
     zone_ids = request.args.getlist('zones')
     categories = request.args.getlist('categories')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
+    source = request.args.get('source', 'Both')
+    time_window = request.args.get('time_window')
 
     filtered = data_loader.observations
+    
+    # Filter by zone
     if zone_ids:
         filtered = filtered[filtered['zone_id'].isin(zone_ids)]
+    
+    # Filter by categories
     if categories:
         filtered = filtered[filtered['category_tag'].isin(categories)]
-    if start_date and end_date:
+    
+    # Filter by source
+    if source and source != 'Both':
+        source_map = {'Sensor': 'sensor', 'Reports': 'report'}
+        mapped_source = source_map.get(source, source.lower())
+        filtered = filtered[filtered['source'] == mapped_source]
+    
+    # Handle time window or explicit date range
+    if time_window:
+        # Use the latest timestamp in the filtered dataset as reference "now"
+        timestamps = pd.to_datetime(filtered['timestamp'])
+        if len(timestamps) > 0:
+            ref_time = timestamps.max()
+            if time_window == 'Last 24 hours':
+                start = ref_time - timedelta(hours=24)
+            elif time_window == 'Last 7 days':
+                start = ref_time - timedelta(days=7)
+            elif time_window == 'Last 4 weeks':
+                start = ref_time - timedelta(weeks=4)
+            else:
+                start = ref_time - timedelta(days=7)  # Default to 7 days
+            filtered = filtered[(pd.to_datetime(filtered['timestamp']) >= start)]
+    elif start_date and end_date:
         filtered = filtered[(pd.to_datetime(filtered['timestamp']) >= start_date) & (pd.to_datetime(filtered['timestamp']) <= end_date)]
 
     return jsonify(filtered.to_dict(orient='records'))

@@ -47,6 +47,8 @@ const API = {
     if (filters.categories) params.append('categories', filters.categories.join(','));
     if (filters.start_date) params.append('start_date', filters.start_date);
     if (filters.end_date) params.append('end_date', filters.end_date);
+    if (filters.source) params.append('source', filters.source);
+    if (filters.time_window) params.append('time_window', filters.time_window);
 
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request(`/noise_data${query}`);

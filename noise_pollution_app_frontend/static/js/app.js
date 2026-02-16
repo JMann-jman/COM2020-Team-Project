@@ -65,12 +65,26 @@ function populateZoneSelect(zones) {
 // Load and display noise data on explore page
 async function loadExploreData() {
   const zoneSelect = document.getElementById('zone');
+  const timeWindowSelect = document.getElementById('time_window');
+  const sourceSelect = document.getElementById('source');
+  
   const zone = zoneSelect?.value;
+  const timeWindow = timeWindowSelect?.value;
+  const source = sourceSelect?.value;
 
-  if (!zone) return;
+  console.log('loadExploreData called with:', { zone, timeWindow, source });
+
+  if (!zone) {
+    console.warn('No zone selected');
+    return;
+  }
 
   await loadAndDisplay(
-    () => API.getNoiseData({ zones: [zone] }),
+    () => API.getNoiseData({ 
+      zones: [zone],
+      time_window: timeWindow,
+      source: source
+    }),
     displayNoiseData,
     'Failed to load noise data'
   );
@@ -258,14 +272,16 @@ document.addEventListener('DOMContentLoaded', async function() {
   const pathname = window.location.pathname;
 
   if (pathname.includes('/explore')) {
-    const exploreForm = document.querySelector('form');
+    const exploreForm = document.getElementById('exploreFilters');
     if (exploreForm) {
       exploreForm.addEventListener('submit', (e) => {
+        console.log('Form submitted');
         e.preventDefault();
         loadExploreData();
       });
     }
-    loadExploreData();
+    // Load initial data
+    await loadExploreData();
   } else if (pathname.includes('/hotspots')) {
     loadHotspots();
   } else if (pathname.includes('/report')) {
