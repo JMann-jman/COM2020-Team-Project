@@ -50,32 +50,35 @@ def submit_report():
     """
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
-    data = request.json
-    zone = data['zone_id']
-    category = data['category']
-    description = data['description']
+    data = request.json or {}
+    zone = data.get('zone_id')
+    category = data.get('category')
+    description = data.get('description', '')
 
     # Deduplication rules (at least 6)
-    now = datetime.now()
+    # Use timezone-aware timestamps to avoid tz-naive/aware comparison errors
+    now = pd.Timestamp.now(tz='UTC')
     time_window = timedelta(hours=1)
 
     # Rule 1: Same zone + category + time window
-    rule1 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
+    # Ensure report timestamps are parsed as UTC-aware before comparing
+    report_times = pd.to_datetime(data_loader.reports['timestamp']).dt.tz_convert('UTC') if pd.to_datetime(data_loader.reports['timestamp']).dt.tz is not None else pd.to_datetime(data_loader.reports['timestamp']).dt.tz_localize('UTC')
+    rule1 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (report_times > now - time_window)]
 
     # Rule 2: Same zone + category + description (exact match)
     rule2 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (data_loader.reports['description_stub'] == description)]
 
     # Rule 3: Same zone + time window (any category)
-    rule3 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
+    rule3 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (report_times > now - time_window)]
 
     # Rule 4: Same category + time window (any zone)
-    rule4 = data_loader.reports[(data_loader.reports['category'] == category) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
+    rule4 = data_loader.reports[(data_loader.reports['category'] == category) & (report_times > now - time_window)]
 
     # Rule 5: Same zone + description
     rule5 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['description_stub'] == description)]
 
     # Rule 6: Same description + time window
-    rule6 = data_loader.reports[(data_loader.reports['description_stub'] == description) & (pd.to_datetime(data_loader.reports['timestamp']) > now - time_window)]
+    rule6 = data_loader.reports[(data_loader.reports['description_stub'] == description) & (report_times > now - time_window)]
 
     if not rule1.empty or not rule2.empty or not rule3.empty or not rule4.empty or not rule5.empty or not rule6.empty:
         return jsonify({'message': 'Duplicate report flagged', 'is_duplicate': True}), 409
@@ -83,7 +86,7 @@ def submit_report():
     new_report = pd.DataFrame({
         'report_id': [generate_id('R', data_loader.reports)],
         'zone_id': [zone],
-        'timestamp': [datetime.now()],
+        'timestamp': [pd.Timestamp.now(tz='UTC')],
         'category': [category],
         'description_stub': [description],
         'status': ['pending']

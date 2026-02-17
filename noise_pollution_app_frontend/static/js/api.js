@@ -28,7 +28,10 @@ const API = {
       });
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        let body = null;
+        try { body = await response.json(); } catch (e) { try { body = await response.text(); } catch (_) { body = null; } }
+        const msg = `API error: ${response.status}` + (body ? ` - ${JSON.stringify(body)}` : '');
+        throw new Error(msg);
       }
 
       return await response.json();
@@ -78,11 +81,22 @@ const API = {
   /**
    * Submit a new incident report
    */
-  submitReport(data) {
-    return this.request('/reports', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
+  async submitReport(data) {
+    const url = `${this.baseURL}/reports`;
+    const headers = { 'Content-Type': 'application/json', 'Role': this.role };
+    try {
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(data) });
+      let body = null;
+      try { body = await res.json(); } catch (e) { body = await res.text().catch(() => null); }
+      if (!res.ok) {
+        // Return object with error info instead of throwing so callers can handle 409 duplicates
+        return { __error: true, status: res.status, body };
+      }
+      return body;
+    } catch (err) {
+      console.error('submitReport failed:', err);
+      throw err;
+    }
   },
 
   /**
@@ -161,5 +175,27 @@ const API = {
    */
   resetQuestProgress() {
     return this.request('/quest/reset', { method: 'POST' });
+  },
+
+  // ----- Moderation endpoints -----
+
+  /**
+   * Moderate a report (valid, duplicate, or invalid)
+   * @param {string} reportId - The ID of the report to moderate
+   * @param {string} decision - The decision: 'valid', 'duplicate', or 'invalid'
+   * @param {string} reason - Reason for the decision
+   */
+  moderateReport(reportId, decision, reason) {
+    // Set role to planner for moderation
+    const originalRole = this.role;
+    this.role = 'planner';
+    const promise = this.request(`/reports/${reportId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ decision, reason })
+    });
+    // Restore original role after request
+    return promise.finally(() => {
+      this.role = originalRole;
+    });
   }
 };

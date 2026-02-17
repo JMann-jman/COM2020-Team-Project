@@ -163,31 +163,143 @@ function displayHotspots(data) {
 async function submitIncidentReport(event) {
   event.preventDefault();
   
-  const zone = document.querySelector('input[name="zone"]')?.value || document.querySelector('select[name="zone"]')?.value;
-  const category = document.querySelector('select[name="category"]')?.value;
-  const description = document.querySelector('textarea[name="description"]')?.value;
+  // Get form elements using the form from the event
+  const form = event.target;
+  const zoneSelect = form.querySelector('select[name="zone"]') || form.querySelector('#zone');
+  const categorySelect = form.querySelector('select[name="category"]') || form.querySelector('#category');
+  const descriptionInput = form.querySelector('textarea[name="description"]');
+  const timeWindowSelect = form.querySelector('select[name="time_window"]');
+  const severitySelect = form.querySelector('select[name="severity"]');
 
-  if (!zone || !category || !description) {
-    alert('Please fill in all fields');
+  const zone = zoneSelect?.value;
+  const category = categorySelect?.value;
+  const description = descriptionInput?.value || '';
+  const time_window = timeWindowSelect?.value || '';
+  const severity = severitySelect?.value || '';
+
+  // Get the success message element
+  const successEl = document.getElementById('reportSuccess');
+
+  // Debug: log the values
+  console.log('Form values:', { zone, category, description, time_window, severity });
+
+  if (!zone || !category) {
+    // Show error in the success element
+    if (successEl) {
+      successEl.className = 'alert alert-danger mt-4';
+      successEl.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Please fill in the required fields (Zone and Category).';
+      successEl.classList.remove('d-none');
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    console.error('Missing required fields:', { zone, category });
     return;
   }
 
-  const result = await executeApiCall(
-    () => API.submitReport({
-      zone_id: zone,
-      category: category,
-      description: description
-    }),
-    'Failed to submit report'
-  );
-  
-  if (result) {
-    if (result.is_duplicate) {
-      alert('This report appears to be a duplicate of a recent report');
-    } else {
-      alert('Report submitted successfully!');
-      event.target.reset();
+  const payload = {
+    zone_id: zone,
+    category: category,
+    description: description
+  };
+  // include optional fields if present
+  if (time_window) payload.time_window = time_window;
+  if (severity) payload.severity = severity;
+
+  // Get submit button and show loading state
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Submitting...';
+  }
+
+  let result = null;
+  try {
+    result = await API.submitReport(payload);
+  } catch (err) {
+    console.error('Report submission error:', err);
+    if (successEl) {
+      successEl.className = 'alert alert-danger mt-4';
+      successEl.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Error: Failed to submit report. Please try again.';
+      successEl.classList.remove('d-none');
     }
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
+  }
+
+  if (result) {
+    if (result.__error) {
+      // Handle API error response
+      if (result.status === 409) {
+        // Duplicate report
+        if (successEl) {
+          successEl.className = 'alert alert-warning mt-4';
+          successEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>This report appears to be a duplicate of a recent report and was not submitted.';
+          successEl.classList.remove('d-none');
+        }
+      } else {
+        // Other error
+        if (successEl) {
+          successEl.className = 'alert alert-danger mt-4';
+          successEl.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Error: ' + (result.body?.error || 'Failed to submit report. Please try again.');
+          successEl.classList.remove('d-none');
+        }
+      }
+    } else if (result.is_duplicate) {
+      // Handle duplicate from successful response
+      if (successEl) {
+        successEl.className = 'alert alert-warning mt-4';
+        successEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>This report appears to be a duplicate of a recent report and was not submitted.';
+        successEl.classList.remove('d-none');
+      }
+    } else {
+      // Success
+      if (successEl) {
+        successEl.className = 'alert alert-success mt-4';
+        successEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Report submitted successfully! A planner will review it for validity/duplication.';
+        successEl.classList.remove('d-none');
+      }
+      event.target.reset();
+      // Refresh report summary in UI if present
+      try { refreshReportsSummary(); } catch (e) { console.warn('Could not refresh reports summary', e); }
+    }
+    
+    // Scroll to the success/error message
+    if (successEl) {
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+}
+
+// Refresh reports summary (count) and recent observations
+async function refreshReportsSummary() {
+  const el = document.getElementById('reportCount');
+  if (!el) return;
+  const reports = await executeApiCall(() => API.getReports(), 'Failed to load reports');
+  if (!reports) return;
+  // Update simple count
+  el.textContent = String(reports.length || 0);
+
+  // Optionally update recent observations table if present
+  const obsTable = document.getElementById('observationsTable');
+  if (obsTable) {
+    // Keep existing mock rows but prepend up to 3 recent reports
+    const recentReports = reports.slice(-3).reverse();
+    recentReports.forEach(r => {
+      const tr = document.createElement('tr');
+      const time = new Date(r.timestamp).toLocaleString();
+      tr.innerHTML = `<td>${time}</td><td><span class="badge bg-light text-dark">Report</span></td><td>—</td><td>${r.category || 'Report'}</td>`;
+      obsTable.insertBefore(tr, obsTable.firstChild);
+    });
+    // Trim to 12 rows to avoid uncontrolled growth
+    while (obsTable.children.length > 12) obsTable.removeChild(obsTable.lastChild);
   }
 }
 
@@ -282,6 +394,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     // Load initial data
     await loadExploreData();
+    // Refresh report count/observations
+    await refreshReportsSummary();
   } else if (pathname.includes('/hotspots')) {
     loadHotspots();
   } else if (pathname.includes('/report')) {
@@ -297,8 +411,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   } else if (pathname.includes('/quest')) {
     initQuest();
+  } else if (pathname.includes('/moderate')) {
+    initModeration();
   }
 });
+
 
 // ===== Quiet Quest =====
 
@@ -508,6 +625,82 @@ function showBadgeNotification(badge) {
     <div class="d-flex">
       <div class="toast-body">
         <i class="${badge.icon} me-1"></i> <strong>Badge earned!</strong> ${badge.name}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.position-fixed').remove()"></button>
+    </div>
+  </div>`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 5000);
+}
+
+// ===== Moderation =====
+
+async function initModeration() {
+  // Attach event listeners to all moderation buttons
+  document.querySelectorAll('.moderation-btn').forEach(btn => {
+    btn.addEventListener('click', handleModeration);
+  });
+}
+
+async function handleModeration(e) {
+  const btn = e.currentTarget;
+  const action = btn.dataset.action;
+  const row = btn.closest('tr');
+  const reportId = row.dataset.reportId;
+  
+  // Get the reason from the dropdown
+  const reasonSelect = document.getElementById('decision_reason');
+  const reason = reasonSelect?.value || 'Valid and relevant';
+  
+  // Get optional notes
+  const notesInput = document.getElementById('decision_notes');
+  const notes = notesInput?.value || '';
+  
+  // Combine reason and notes
+  const fullReason = notes ? `${reason} - ${notes}` : reason;
+
+  // Disable all buttons in this row while processing
+  const buttons = row.querySelectorAll('.moderation-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  try {
+    const result = await API.moderateReport(reportId, action, fullReason);
+    
+    if (result) {
+      // Update the UI to show the report has been moderated
+      const statusCell = row.querySelector('.status-badge');
+      const actionCell = row.querySelector('.action-buttons');
+      
+      if (statusCell) {
+        statusCell.className = 'badge bg-success-subtle text-success status-badge';
+        statusCell.textContent = action === 'valid' ? 'Validated' : 
+                                  action === 'duplicate' ? 'Duplicate' : 'Invalid';
+      }
+      
+      if (actionCell) {
+        actionCell.innerHTML = '<span class="text-muted small">Reviewed</span>';
+      }
+      
+      // Show success message
+      showModerationToast(`Report #${reportId} marked as ${action}`, 'success');
+    }
+  } catch (error) {
+    console.error('Moderation failed:', error);
+    showModerationToast(`Failed to moderate report #${reportId}`, 'error');
+    // Re-enable buttons on error
+    buttons.forEach(b => b.disabled = false);
+  }
+}
+
+function showModerationToast(message, type) {
+  const toast = document.createElement('div');
+  toast.className = 'position-fixed top-0 end-0 p-3';
+  toast.style.zIndex = '9999';
+  const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+  toast.innerHTML = `<div class="toast show align-items-center text-white border-0 ${bgClass}" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        ${message}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest('.position-fixed').remove()"></button>
     </div>
