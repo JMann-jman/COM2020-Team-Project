@@ -331,3 +331,6 @@ MOD00329,REP00350,valid,clear description,2025-10-28T04:00:00Z
 MOD00330,REP00116,valid,multiple reports corroborate,2025-11-29T10:00:00Z
 MOD331,R102,valid,Select reason,2026-02-17 09:24:42.519285
 MOD332,R103,valid,Select reason,2026-02-17 09:24:43.713411
+MOD333,R103,duplicate,Select reason,2026-02-17 09:54:26.623809
+MOD334,R102,invalid,Select reason,2026-02-17 09:54:27.627681
+MOD335,R102,duplicate,Insufficient information - brug,2026-02-17 09:54:43.222370

@@ -107,14 +107,23 @@ async function loadExploreData() {
   const timeWindowSelect = document.getElementById('time_window');
   const sourceSelect = document.getElementById('source');
   
-  const zone = zoneSelect?.value;
+  let zone = zoneSelect?.value;
   const timeWindow = timeWindowSelect?.value;
   const source = sourceSelect?.value;
 
   console.log('loadExploreData called with:', { zone, timeWindow, source });
 
+  // Auto-select first zone if none is selected (after zones are loaded)
+  if (!zone && zoneSelect?.options?.length > 1) {
+    zoneSelect.selectedIndex = 1; // Select the first actual option (index 0 is the placeholder)
+    zone = zoneSelect.value;
+    console.log('Auto-selected zone:', zone);
+  }
+
   if (!zone) {
-    console.warn('No zone selected');
+    console.warn('No zone selected and no zones available');
+    // Still try to load reports even without a zone
+    await refreshReportsSummary();
     return;
   }
 
@@ -321,10 +330,27 @@ async function submitIncidentReport(event) {
 async function refreshReportsSummary() {
   const el = document.getElementById('reportCount');
   if (!el) return;
-  const reports = await executeApiCall(() => API.getReports(), 'Failed to load reports');
-  if (!reports) return;
+  
+  console.log('Refreshing reports summary...');
+  
+  // Make direct API call without executeApiCall to avoid showing alerts on error
+  let reports = null;
+  try {
+    reports = await API.getReports();
+  } catch (error) {
+    console.warn('Failed to load reports, keeping existing count:', error);
+    // Don't show alert, just log to console and keep existing count
+    return;
+  }
+  
+  if (!reports) {
+    console.warn('No reports loaded, keeping existing count');
+    return;
+  }
+  
   // Update simple count
   el.textContent = String(reports.length || 0);
+  console.log('Reports count updated:', reports.length);
 
   // Optionally update recent observations table if present
   const obsTable = document.getElementById('observationsTable');
