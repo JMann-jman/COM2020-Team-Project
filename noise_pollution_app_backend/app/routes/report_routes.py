@@ -62,7 +62,8 @@ def submit_report():
 
     # Rule 1: Same zone + category + time window
     # Ensure report timestamps are parsed as UTC-aware before comparing
-    report_times = pd.to_datetime(data_loader.reports['timestamp']).dt.tz_convert('UTC') if pd.to_datetime(data_loader.reports['timestamp']).dt.tz is not None else pd.to_datetime(data_loader.reports['timestamp']).dt.tz_localize('UTC')
+    # Use format='mixed' to handle mixed timestamp formats in the CSV
+    report_times = pd.to_datetime(data_loader.reports['timestamp'], format='mixed', utc=True)
     rule1 = data_loader.reports[(data_loader.reports['zone_id'] == zone) & (data_loader.reports['category'] == category) & (report_times > now - time_window)]
 
     # Rule 2: Same zone + category + description (exact match)
@@ -86,7 +87,7 @@ def submit_report():
     new_report = pd.DataFrame({
         'report_id': [generate_id('R', data_loader.reports)],
         'zone_id': [zone],
-        'timestamp': [pd.Timestamp.now(tz='UTC')],
+        'timestamp': [pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%dT%H:%M:%SZ')],
         'category': [category],
         'description_stub': [description],
         'status': ['pending']
