@@ -48,8 +48,9 @@
           </div>
 
           <form id="planForm" method="post" action="{{ url_for('plan') }}" novalidate>
-            <div class="row g-3">
+            <div class="row g-3 mb-5">
               <div class="col-md-6">
+
                 <label class="form-label fw-semibold" for="zone">Zone *</label>
                 <select class="form-select" id="zone" name="zone" required>
                   <option value="" selected disabled>Select a zone</option>
@@ -60,11 +61,12 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold" for="intervention">Intervention *</label>
                 <!-- Hook point: backend can render options -->
-                <select class="form-select" id="intervention" name="intervention" required>
+                <select class="form-select" id="intervention" name="intervention" required style="position: relative; z-index: 1000;">
                   <option value="" selected disabled>Select an intervention</option>
                 </select>
                 <div class="invalid-feedback">Please select an intervention.</div>
               </div>
+
 
               <div class="col-12">
                 <label class="form-label fw-semibold" for="notes">Notes (optional)</label>
@@ -173,15 +175,34 @@
     if (window.bootstrap) triggers.forEach(el => new bootstrap.Tooltip(el));
   })();
 
+  // Fix dropdown direction - force dropdown to open downwards
+  const interventionSelect = document.getElementById('intervention');
+  if (interventionSelect) {
+    interventionSelect.style.position = 'relative';
+    interventionSelect.style.zIndex = '100';
+  }
+
   // Seeded intervention details (simple + explainable)
+  // Maps intervention_id from API to display details
   const details = {
-    signage:       { cost: "Low",    feas: "High (0.85)",   impact: "0.5–1.5 dB" },
-    barriers:      { cost: "High",   feas: "Medium (0.55)", impact: "3–7 dB" },
-    schedule:      { cost: "Low",    feas: "High (0.80)",   impact: "1–3 dB" },
-    "quiet-hours": { cost: "Low",    feas: "Medium (0.65)", impact: "2–5 dB" },
-    maintenance:   { cost: "High",   feas: "Medium (0.50)", impact: "2–4 dB" },
-    enforcement:   { cost: "Medium", feas: "Medium (0.60)", impact: "1–2 dB" }
+
+    INT001: { cost: "Low",    feas: "High (0.75)",   impact: "1–3 dB" },      // signage
+    INT002: { cost: "Low",    feas: "Medium (0.65)", impact: "2–5 dB" },      // quiet_hours_policy
+    INT003: { cost: "Low",    feas: "High (0.70)",   impact: "1–4 dB" },      // maintenance_schedule
+    INT004: { cost: "Medium", feas: "Medium (0.55)", impact: "3–6 dB" },      // event_end_time_cap
+    INT005: { cost: "High",   feas: "Medium (0.40)", impact: "4–8 dB" },      // traffic_reroute
+    INT006: { cost: "Medium", feas: "Medium (0.60)", impact: "2–6 dB" },      // speed_reduction
+    INT007: { cost: "High",   feas: "Medium (0.45)", impact: "5–10 dB" },    // acoustic_barrier
+    INT008: { cost: "Medium", feas: "Medium (0.50)", impact: "2–7 dB" },      // window_seals_program
+    INT009: { cost: "Low",    feas: "High (0.80)",   impact: "1–3 dB" },      // quiet_zone_marking
+    INT010: { cost: "High",   feas: "Medium (0.35)", impact: "3–9 dB" },      // equipment_upgrade
+    INT011: { cost: "Medium", feas: "Medium (0.55)", impact: "2–6 dB" },     // construction_time_limits
+    INT012: { cost: "Low",    feas: "High (0.70)",   impact: "1–3 dB" },      // public_awareness_campaign
+    INT013: { cost: "High",   feas: "Medium (0.30)", impact: "2–7 dB" },      // bike_lane_expansion
+    INT014: { cost: "Medium", feas: "Medium (0.50)", impact: "1–4 dB" },     // green_buffer_planting
+    INT015: { cost: "Medium", feas: "Medium (0.55)", impact: "1–5 dB" }       // patrol_enforcement
   };
+
 
   const interventionEl = document.getElementById('intervention');
   const costBandEl = document.getElementById('costBand');

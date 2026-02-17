@@ -46,6 +46,45 @@ async function loadZones() {
   return zones;
 }
 
+// Load interventions and populate dropdowns
+async function loadInterventions() {
+  const interventions = await executeApiCall(
+    () => API.getInterventions(),
+    'Failed to load interventions'
+  );
+  if (interventions) {
+    console.log('Interventions loaded:', interventions);
+    populateInterventionSelect(interventions);
+  } else {
+    console.warn('No interventions returned from API');
+  }
+  return interventions;
+}
+
+// Populate intervention select dropdowns
+function populateInterventionSelect(interventions) {
+  const interventionSelects = document.querySelectorAll('select[name="intervention"], select[id="intervention"]');
+  console.log('Found intervention selects:', interventionSelects.length);
+  interventionSelects.forEach(select => {
+    console.log('Populating intervention select:', select.id || select.name);
+    // Keep the first placeholder option
+    const placeholder = select.options[0];
+    select.innerHTML = '';
+    select.appendChild(placeholder);
+    
+    interventions.forEach(intervention => {
+      const option = document.createElement('option');
+      option.value = intervention.intervention_id;
+      // Format the display text: replace underscores with spaces and capitalize
+      const displayText = intervention.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      option.textContent = `${intervention.intervention_id} - ${displayText}`;
+      select.appendChild(option);
+    });
+    console.log('Intervention select now has', select.options.length, 'options');
+  });
+}
+
+
 // Populate zone select dropdowns
 function populateZoneSelect(zones) {
   const zoneSelects = document.querySelectorAll('select[name="zone"], select[id="zone"]');
@@ -404,11 +443,13 @@ document.addEventListener('DOMContentLoaded', async function() {
       reportForm.addEventListener('submit', submitIncidentReport);
     }
   } else if (pathname.includes('/plan')) {
+    loadInterventions();
     loadPlansForComparison();
     const compareBtn = document.querySelector('button[onclick*="comparePlans"]');
     if (compareBtn) {
       compareBtn.onclick = comparePlans;
     }
+
   } else if (pathname.includes('/quest')) {
     initQuest();
   } else if (pathname.includes('/moderate')) {
