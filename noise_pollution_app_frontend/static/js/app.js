@@ -703,16 +703,43 @@ function displayInterventionsForPlan(plan) {
   return '—';
 }
 
-function renderPlansTracker(plans) {
+const PLAN_PAGE_SIZE = 10;
+let plansTrackerCache = [];
+let plansTrackerCurrentPage = 0;
+
+function updatePlansPaginationControls() {
+  const pageInfo = document.getElementById('planPageInfo');
+  const prevBtn = document.getElementById('planPrevPage');
+  const nextBtn = document.getElementById('planNextPage');
+  const totalPages = Math.ceil(plansTrackerCache.length / PLAN_PAGE_SIZE);
+
+  if (pageInfo) {
+    if (totalPages === 0) {
+      pageInfo.textContent = 'Page 0 of 0';
+    } else {
+      pageInfo.textContent = `Page ${plansTrackerCurrentPage + 1} of ${totalPages}`;
+    }
+  }
+
+  if (prevBtn) prevBtn.disabled = plansTrackerCurrentPage <= 0;
+  if (nextBtn) nextBtn.disabled = totalPages === 0 || plansTrackerCurrentPage >= totalPages - 1;
+}
+
+function renderPlansTrackerPage() {
   const table = document.getElementById('plansTable');
   if (!table) return;
 
-  if (!plans || plans.length === 0) {
+  if (!plansTrackerCache || plansTrackerCache.length === 0) {
     table.innerHTML = '<tr><td colspan="7" class="text-muted small">No plans available.</td></tr>';
+    updatePlansPaginationControls();
     return;
   }
 
-  table.innerHTML = plans.map(plan => {
+  const start = plansTrackerCurrentPage * PLAN_PAGE_SIZE;
+  const end = start + PLAN_PAGE_SIZE;
+  const pagePlans = plansTrackerCache.slice(start, end);
+
+  table.innerHTML = pagePlans.map(plan => {
     const safeNotes = String(plan.notes || '').replace(/"/g, '&quot;');
     return `
       <tr data-plan-id="${plan.plan_id}">
@@ -741,6 +768,19 @@ function renderPlansTracker(plans) {
   table.querySelectorAll('.tracker-save').forEach(btn => {
     btn.addEventListener('click', handlePlanTrackerSave);
   });
+
+  updatePlansPaginationControls();
+}
+
+function renderPlansTracker(plans) {
+  plansTrackerCache = Array.isArray(plans) ? plans : [];
+  const totalPages = Math.ceil(plansTrackerCache.length / PLAN_PAGE_SIZE);
+  if (totalPages === 0) {
+    plansTrackerCurrentPage = 0;
+  } else if (plansTrackerCurrentPage >= totalPages) {
+    plansTrackerCurrentPage = totalPages - 1;
+  }
+  renderPlansTrackerPage();
 }
 
 async function loadPlansTracker() {
@@ -827,6 +867,28 @@ function initPlanForm() {
 }
 
 async function initPlanPage() {
+  const prevBtn = document.getElementById('planPrevPage');
+  const nextBtn = document.getElementById('planNextPage');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (plansTrackerCurrentPage > 0) {
+        plansTrackerCurrentPage -= 1;
+        renderPlansTrackerPage();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.ceil(plansTrackerCache.length / PLAN_PAGE_SIZE);
+      if (plansTrackerCurrentPage < totalPages - 1) {
+        plansTrackerCurrentPage += 1;
+        renderPlansTrackerPage();
+      }
+    });
+  }
+
   await loadInterventions();
   initPlanForm();
   await loadPlansTracker();
