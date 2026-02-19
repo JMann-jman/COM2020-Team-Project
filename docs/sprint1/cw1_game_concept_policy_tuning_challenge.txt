@@ -1,0 +1,35 @@
+Game Concept: Quiet Quest
+
+Section for inclusion in CW1 Prototype Report (1_report/cw1_prototype_report.pdf)
+
+Overview
+Quiet Quest is a gamification layer built into the Neighbourhood Noise Explorer prototype. It is designed to help community users build genuine understanding of noise data, hotspots, and interventions through structured missions, rather than just browsing dashboards passively. Users progress through three tiers of missions, earn badges, and are shown explanations for every answer regardless of whether they got it right.
+
+Motivation and Design Goals
+The core problem the tool addresses is that noise data and intervention planning are not intuitive for non-expert users. Quiet Quest provides a guided path through the data: Tier 1 builds basic data literacy, Tier 2 introduces analysis across zones and interventions, and Tier 3 asks users to reason about trade-offs in a planning context. Every answer is accompanied by a plain-language explanation grounded in the actual dataset, which keeps the tool honest and consistent with the explainability principle running through the rest of the design.
+
+What Is Built
+
+Missions
+There are 18 missions across three tiers, six per tier, stored in missions.csv. Each mission has a question, four multiple-choice options, a correct answer key, a hint, and an explanation shown after submission. Tier 1 covers basic facts about the dataset such as zone counts, noise sources, and hotspot rankings. Tier 2 asks users to compare zones, rank interventions by feasibility or impact, and draw conclusions from the data. Tier 3 asks users to reason about planning decisions: choosing intervention combinations under budget constraints, calculating expected impact, and identifying which zone type needs the most urgent attention.
+
+Progress tracking
+User progress is tracked in memory, keyed by a user ID passed in the X-User-Id request header. The backend records which missions have been completed, whether each answer was correct, and whether it was answered correctly on the first attempt. Progress resets when the server restarts as there is no persistent store yet.
+
+Badges
+Five badges are defined in quest_routes.py. Noise Novice is awarded for completing all six Tier 1 missions. Sound Analyst is awarded for completing all six Tier 2 missions. Quiet Champion is awarded for completing all six Tier 3 missions. First Step is awarded for completing any single mission. Sharp Ear is awarded for answering all six Tier 1 missions correctly on the first attempt. Badges are evaluated automatically after each mission submission and returned in the response.
+
+Endpoints
+GET /missions returns all missions grouped by tier, with the current user's completion and correctness status for each. POST /missions/<id>/answer checks the submitted answer, records progress, evaluates badge eligibility, and returns the correct answer, explanation, and any newly earned badges. GET /quest/progress returns the user's full progress, tier-by-tier completion counts, earned badges, and the full badge catalogue. POST /quest/reset clears the user's progress, used for manual testing.
+
+What Is Not Yet Built
+Progress is not persisted to disk, so it is lost on server restart. There is no leaderboard or cross-user comparison. The community_understanding success metric in success_routes.py, which is intended to reflect engagement with Quiet Quest, is currently hardcoded as a placeholder value of 0.8 and is not derived from actual mission completion data. A scenario-based planning challenge building on top of Quiet Quest has been scoped as a CW2 feature but is not implemented.
+
+Evaluation Approach
+No formal user testing has been conducted in Sprint 1. The evaluation infrastructure consists of three programmatic success measures in GET /success_measures (maintainer role only). Hotspot validity checks what fraction of pre-calculated hotspots align with the top five highest-average-dB zones in the observations data. Reporting quality is the ratio of duplicate moderation decisions to all decisions. Community understanding is currently a hardcoded placeholder at 0.8.
+The synthetic dataset includes injected event-spike intervals in event-tagged zones to support manual hotspot validation. The quest reset endpoint exists to allow iterative manual testing of mission and badge flows without restarting the server. Three entries with description "test" are present in incident_reports.csv from smoke-testing the report submission and deduplication rules. Formal evaluation of Quiet Quest, including whether the mission difficulty progression feels appropriate and whether explanations improve user understanding, is planned for CW2.
+
+Risks and Mitigations
+The in-memory progress store means any server restart wipes all user progress. The CW2 mitigation is to persist progress to a CSV file using the same pattern as the other data files. The community_understanding metric being mocked means there is currently no real signal on whether Quiet Quest is achieving its learning goals. Connecting it to actual mission completion rates is a CW2 task. If the 18 missions feel too narrow or repetitive, additional missions can be added to missions.csv without any code changes to the backend.
+
+Last updated: 2026-02-19
