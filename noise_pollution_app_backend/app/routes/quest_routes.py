@@ -1,7 +1,7 @@
 """
 Routes for the Quiet Quest gamification feature.
 
-Provides endpoints for listing missions, submitting answers,
+This file provides endpoints for listing missions, submitting answers,
 and tracking user progress with badges.
 """
 

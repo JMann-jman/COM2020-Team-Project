@@ -46,8 +46,8 @@ const API = {
    */
   getNoiseData(filters = {}) {
     const params = new URLSearchParams();
-    if (filters.zones) params.append('zones', filters.zones.join(','));
-    if (filters.categories) params.append('categories', filters.categories.join(','));
+    if (filters.zones) filters.zones.forEach(z => params.append('zones', z));
+    if (filters.categories) filters.categories.forEach(c => params.append('categories', c));
     if (filters.start_date) params.append('start_date', filters.start_date);
     if (filters.end_date) params.append('end_date', filters.end_date);
     if (filters.source) params.append('source', filters.source);
@@ -89,7 +89,7 @@ const API = {
       let body = null;
       try { body = await res.json(); } catch (e) { body = await res.text().catch(() => null); }
       if (!res.ok) {
-        // Return object with error info instead of throwing so callers can handle 409 duplicates
+        // Return object with error info instead of throwing so callers can handle API errors
         return { __error: true, status: res.status, body };
       }
       return body;
@@ -102,8 +102,9 @@ const API = {
   /**
    * Get all incident reports
    */
-  getReports() {
-    return this.request('/reports');
+  getReports(status = null) {
+    const query = status ? `?status=${encodeURIComponent(status)}` : '';
+    return this.request(`/reports${query}`);
   },
 
   /**
@@ -122,6 +123,18 @@ const API = {
     });
   },
 
+  updatePlan(planId, data) {
+    const originalRole = this.role;
+    this.role = 'planner';
+    const promise = this.request(`/plans/${planId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+    return promise.finally(() => {
+      this.role = originalRole;
+    });
+  },
+
   /**
    * Get all plans
    */
@@ -129,12 +142,16 @@ const API = {
     return this.request('/plans');
   },
 
-  /**
-   * Compare plans
-   */
-  comparePlans(planIds) {
-    const query = planIds.map(id => `plan_ids=${id}`).join('&');
-    return this.request(`/plans/compare?${query}`);
+  buildExportUrl(format, dataType = 'observations', filters = {}) {
+    const params = new URLSearchParams();
+    params.append('type', dataType);
+    if (filters.zones) filters.zones.forEach(z => params.append('zones', z));
+    if (filters.categories) filters.categories.forEach(c => params.append('categories', c));
+    if (filters.start_date) params.append('start_date', filters.start_date);
+    if (filters.end_date) params.append('end_date', filters.end_date);
+    if (filters.source) params.append('source', filters.source);
+    if (filters.time_window) params.append('time_window', filters.time_window);
+    return `${this.baseURL}/export/${format}?${params.toString()}`;
   },
 
   /**

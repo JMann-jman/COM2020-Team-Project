@@ -1,7 +1,7 @@
 """
 Routes for success measures in the Noise Pollution Monitoring API.
 
-This module defines blueprints for calculating and retrieving success metrics.
+This file defines blueprints for calculating and retrieving success metrics.
 """
 
 from flask import Blueprint, jsonify

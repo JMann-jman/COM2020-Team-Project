@@ -131,35 +131,4 @@
   </div>
 </main>
 
-<script>
-  // Lightweight client-side validation for prototype demo (does not replace backend validation)
-  (function () {
-    const form = document.getElementById('reportForm');
-    const success = document.getElementById('reportSuccess');
-    if (!form) return;
-
-    form.addEventListener('submit', function (e) {
-      // If backend is enabled, remove the next two lines.
-      e.preventDefault();
-      e.stopPropagation();
-
-      let ok = true;
-      ['zone','time_window','category','severity'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el.value) { ok = false; el.classList.add('is-invalid'); }
-        else el.classList.remove('is-invalid');
-      });
-
-      if (ok) {
-        success.classList.remove('d-none');
-        form.reset();
-      }
-    });
-
-    ['zone','time_window','category','severity'].forEach(id => {
-      const el = document.getElementById(id);
-      el.addEventListener('change', () => el.classList.remove('is-invalid'));
-    });
-  })();
-</script>
 {% endblock %}

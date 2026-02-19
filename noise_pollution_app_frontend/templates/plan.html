@@ -26,7 +26,7 @@
     <div class="card-body d-flex gap-3 align-items-start">
       <div class="badge-icon bg-soft-slate flex-shrink-0"><i class="bi bi-eye"></i></div>
       <div>
-        <div class="h6 mb-1">Transparent impact model (Sprint 1)</div>
+        <div class="h6 mb-1">Transparent impact model</div>
         <div class="muted small">
           Expected impact is a simple range (dB reduction) seeded for demo and refined in Sprint 2.
           This is not an ML prediction.
@@ -42,7 +42,7 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <div class="h5 mb-1">Create a plan</div>
-              <div class="muted small">Sprint 1: single intervention plan.</div>
+              <div class="muted small">Single intervention plan.</div>
             </div>
             <span class="badge text-bg-light">Prototype v0.1</span>
           </div>
@@ -120,7 +120,7 @@
           </div>
 
           <div class="small text-muted mt-3">
-            Values are explainable ranges (not ML predictions) used to compare simple choices.
+            Values are explainable ranges (not ML predictions) used to guide planning choices.
           </div>
         </div>
       </div>
@@ -132,135 +132,32 @@
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div>
           <div class="h6 mb-1">Created plans</div>
-          <div class="muted small">Keep this list short in Sprint 1.</div>
+          <div class="muted small">Keep this list short and focused.</div>
         </div>
-        <span class="badge text-bg-light">Mock</span>
+        <span class="badge text-bg-light">Live data</span>
       </div>
 
       <div class="table-responsive">
         <table class="table align-middle mb-0">
           <thead class="table-light">
             <tr class="small text-muted">
-              <th>Plan ID</th><th>Zone</th><th>Intervention</th><th>Status</th><th>Expected impact</th>
+              <th>Plan ID</th><th>Zone</th><th>Interventions</th><th>Status</th><th>Expected impact</th><th>Notes / Evidence</th><th>Save</th>
             </tr>
           </thead>
 
           <!-- Hook point -->
           <tbody id="plansTable">
             <tr>
-              <td>#P201</td><td>Zone A</td><td>Quiet hours policy</td>
-              <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
-              <td>2–5 dB</td>
-            </tr>
-            <tr>
-              <td>#P202</td><td>Zone C</td><td>Scheduling changes</td>
-              <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
-              <td>1–3 dB</td>
+              <td colspan="7" class="text-muted small">Loading plans…</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <div class="small text-muted mt-3">
-        Sprint 2 can add scenario comparison (multiple interventions, budgets, coverage).
+        Update status and notes to track implementation evidence.
       </div>
     </div>
   </div>
 </main>
-
-<script>
-  // Tooltips (Sprint 2 buttons)
-  (function(){
-    const triggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    if (window.bootstrap) triggers.forEach(el => new bootstrap.Tooltip(el));
-  })();
-
-  // Fix dropdown direction - force dropdown to open downwards
-  const interventionSelect = document.getElementById('intervention');
-  if (interventionSelect) {
-    interventionSelect.style.position = 'relative';
-    interventionSelect.style.zIndex = '100';
-  }
-
-  // Seeded intervention details (simple + explainable)
-  // Maps intervention_id from API to display details
-  const details = {
-
-    INT001: { cost: "Low",    feas: "High (0.75)",   impact: "1–3 dB" },      // signage
-    INT002: { cost: "Low",    feas: "Medium (0.65)", impact: "2–5 dB" },      // quiet_hours_policy
-    INT003: { cost: "Low",    feas: "High (0.70)",   impact: "1–4 dB" },      // maintenance_schedule
-    INT004: { cost: "Medium", feas: "Medium (0.55)", impact: "3–6 dB" },      // event_end_time_cap
-    INT005: { cost: "High",   feas: "Medium (0.40)", impact: "4–8 dB" },      // traffic_reroute
-    INT006: { cost: "Medium", feas: "Medium (0.60)", impact: "2–6 dB" },      // speed_reduction
-    INT007: { cost: "High",   feas: "Medium (0.45)", impact: "5–10 dB" },    // acoustic_barrier
-    INT008: { cost: "Medium", feas: "Medium (0.50)", impact: "2–7 dB" },      // window_seals_program
-    INT009: { cost: "Low",    feas: "High (0.80)",   impact: "1–3 dB" },      // quiet_zone_marking
-    INT010: { cost: "High",   feas: "Medium (0.35)", impact: "3–9 dB" },      // equipment_upgrade
-    INT011: { cost: "Medium", feas: "Medium (0.55)", impact: "2–6 dB" },     // construction_time_limits
-    INT012: { cost: "Low",    feas: "High (0.70)",   impact: "1–3 dB" },      // public_awareness_campaign
-    INT013: { cost: "High",   feas: "Medium (0.30)", impact: "2–7 dB" },      // bike_lane_expansion
-    INT014: { cost: "Medium", feas: "Medium (0.50)", impact: "1–4 dB" },     // green_buffer_planting
-    INT015: { cost: "Medium", feas: "Medium (0.55)", impact: "1–5 dB" }       // patrol_enforcement
-  };
-
-
-  const interventionEl = document.getElementById('intervention');
-  const costBandEl = document.getElementById('costBand');
-  const feasibilityEl = document.getElementById('feasibility');
-  const impactEl = document.getElementById('impact');
-
-  function updateDetails() {
-    const key = interventionEl.value;
-    if (!key || !details[key]) {
-      costBandEl.textContent = "—";
-      feasibilityEl.textContent = "—";
-      impactEl.textContent = "—";
-      return;
-    }
-    costBandEl.textContent = details[key].cost;
-    feasibilityEl.textContent = details[key].feas;
-    impactEl.textContent = details[key].impact;
-  }
-  interventionEl.addEventListener('change', updateDetails);
-  updateDetails();
-
-  // Prototype submit behaviour (remove preventDefault when backend is ready)
-  const form = document.getElementById('planForm');
-  const confirmation = document.getElementById('planConfirmation');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    confirmation.classList.add('d-none');
-
-    const zone = document.getElementById('zone');
-    let ok = true;
-    [zone, interventionEl].forEach(el => {
-      if (!el.value) { ok = false; el.classList.add('is-invalid'); }
-      else el.classList.remove('is-invalid');
-    });
-    if (!ok) return;
-
-    confirmation.classList.remove('d-none');
-
-    // Add a row for demo
-    const table = document.getElementById('plansTable');
-    const tr = document.createElement('tr');
-    const text = interventionEl.options[interventionEl.selectedIndex].text;
-    const imp = details[interventionEl.value]?.impact || "—";
-    tr.innerHTML = `
-      <td>#P${Math.floor(300 + Math.random() * 200)}</td>
-      <td>${zone.value}</td>
-      <td>${text}</td>
-      <td><span class="badge bg-secondary-subtle text-secondary">Planned</span></td>
-      <td>${imp}</td>
-    `;
-    table.prepend(tr);
-    form.reset();
-    updateDetails();
-  });
-
-  ['zone','intervention'].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('change', () => el.classList.remove('is-invalid'));
-  });
-</script>
 {% endblock %}

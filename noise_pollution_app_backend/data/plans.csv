@@ -1,5 +1,5 @@
 plan_id,zone_id,interventions_selected,budget,status,expected_impact,created_by
-P001,Z10,"['I08', 'I10', 'I13', 'I03']",7680,planned,15,planner
+P001,Z10,"['I08', 'I10', 'I13', 'I03']",7680,in_progress,15,planner
 P002,Z09,"['I06', 'I04', 'I02', 'I05']",4470,in_progress,10,planner
 P003,Z03,['I08'],1764,in_progress,11,planner
 P004,Z02,['I15'],8461,in_progress,10,planner

@@ -31,7 +31,7 @@
     <div class="card-body d-flex gap-3 align-items-start">
       <div class="badge-icon bg-soft-amber flex-shrink-0"><i class="bi bi-lightbulb"></i></div>
       <div>
-        <div class="h6 mb-1">How hotspots are calculated (Sprint 1)</div>
+        <div class="h6 mb-1">How hotspots are calculated</div>
         <div class="small text-muted mb-1">
           Explainable, rule-based severity scoring with zone-level aggregation.
         </div>
@@ -50,9 +50,9 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <div class="h6 mb-1">Hotspot ranking</div>
-              <div class="muted small">Backend will render rows here (hook point).</div>
+              <div class="muted small">Ranked from live backend data.</div>
             </div>
-            <span class="badge text-bg-light">Mock</span>
+            <span class="badge text-bg-light">Live data</span>
           </div>
 
           <div class="table-responsive">
@@ -66,6 +66,12 @@
               <tbody id="hotspotTable">
               </tbody>
             </table>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-2" id="hotspotPagination">
+            <button class="btn btn-sm btn-outline-secondary hotspot-page-btn" type="button" data-page="1">1</button>
+            <button class="btn btn-sm btn-outline-secondary hotspot-page-btn" type="button" data-page="2">2</button>
+            <button class="btn btn-sm btn-outline-secondary hotspot-page-btn" type="button" data-page="3">3</button>
           </div>
 
           <!-- API data container -->
@@ -84,17 +90,17 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <div class="h6 mb-1">Incidents per zone</div>
-              <div class="muted small">Secondary visualisation (placeholder)</div>
+              <div class="muted small">Validated incidents by zone.</div>
             </div>
-            <span class="badge text-bg-light">Placeholder</span>
+            <span class="badge text-bg-light">Live data</span>
           </div>
 
           <div id="incidentsChart" class="chart-placeholder">
-            <div class="muted small">Bar chart placeholder (validated reports per zone).</div>
+            <div class="muted small">Loading incident chart…</div>
           </div>
 
           <div class="small text-muted mt-3">
-            Sprint 1: keep this simple—one supporting chart is enough.
+            One supporting chart provides a quick incident overview by zone.
           </div>
         </div>
       </div>

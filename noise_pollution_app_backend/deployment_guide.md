@@ -14,6 +14,32 @@
 - `python backend_app.py`
 
 
+## How to Run Tests
+
+### Automated test suite (mandatory)
+From repository root:
+
+1. Install dependencies:
+	- `pip install -r noise_pollution_app_backend/requirements.txt`
+2. Run backend tests:
+	- `python -m pytest noise_pollution_app_backend/tests -q`
+
+The suite covers filtering, hotspot detection, incident submission/moderation,
+deduplication flagging, exports, and role protection.
+
+### Manual end-to-end tests (mandatory)
+1. Start backend:
+	- `python noise_pollution_app_backend/backend_app.py`
+2. Start frontend:
+	- `python noise_pollution_app_frontend/app.py`
+3. Execute scenarios in:
+	- `4_technical/manual_test_plan.md`
+4. Record results in:
+	- `4_technical/testing_evidence.md`
+5. Export evidence to PDF for submission as:
+	- `4_technical/testing_evidence.pdf`
+
+
 
 ## Environment Variables
 - No secrets required for demo.

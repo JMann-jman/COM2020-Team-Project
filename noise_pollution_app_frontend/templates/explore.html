@@ -15,10 +15,8 @@
     </div>
 
     <div class="d-flex gap-2">
-      <button class="btn btn-outline-secondary btn-pill" disabled
-              data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">Export CSV</button>
-      <button class="btn btn-outline-secondary btn-pill" disabled
-              data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">Export PDF</button>
+      <button class="btn btn-outline-secondary btn-pill" id="exportCsvBtn" type="button">Export CSV</button>
+      <button class="btn btn-outline-secondary btn-pill" id="exportPdfBtn" type="button">Export PDF</button>
     </div>
   </div>
 </header>
@@ -50,6 +48,30 @@
             <option selected>Both</option>
             <option>Sensor</option>
             <option>Reports</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold" for="category">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">All categories</option>
+            <option value="traffic">Traffic</option>
+            <option value="music">Music</option>
+            <option value="construction">Construction</option>
+            <option value="machinery">Machinery</option>
+            <option value="event">Event</option>
+            <option value="voices">Voices</option>
+            <option value="sports">Sports</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold" for="trend_granularity">Trend mode</label>
+          <select class="form-select" id="trend_granularity" name="trend_granularity">
+            <option value="hour" selected>Hour</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
           </select>
         </div>
 
@@ -97,6 +119,21 @@
     </div>
   </div>
 
+  <div class="card app-card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="h6 mb-1">Noise map view (schematic)</div>
+          <div class="muted small">Zone-level average dB for selected filters</div>
+        </div>
+        <span class="badge text-bg-light">Live data</span>
+      </div>
+      <div id="zoneMap" class="zone-map-grid">
+        <div class="muted small">Loading map data…</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Chart + table -->
   <div class="row g-3">
     <div class="col-lg-8">
@@ -105,9 +142,9 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <div class="h6 mb-1">Noise trend (dB)</div>
-              <div class="muted small">Chart placeholder (Chart.js later)</div>
+              <div class="muted small">Live trend from selected filters</div>
             </div>
-            <span class="badge text-bg-light">Placeholder</span>
+            <span class="badge text-bg-light">Live data</span>
           </div>
 
           <!-- Hook point -->
@@ -115,9 +152,6 @@
             <div class="muted small">Chart renders here using API data.</div>
           </div>
 
-          <div class="small text-muted mt-3">
-            Demo tip: use this view to show exploration before submitting a report.
-          </div>
         </div>
       </div>
     </div>
@@ -128,9 +162,9 @@
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <div class="h6 mb-1">Recent observations</div>
-              <div class="muted small">Latest 8 records (mock)</div>
+              <div class="muted small">Showing the 6 most recent records from API</div>
             </div>
-            <span class="badge text-bg-light">Mock</span>
+            <span class="badge text-bg-light">Live data</span>
           </div>
 
           
@@ -159,6 +193,16 @@
     place-items: center;
     padding: 18px;
     text-align: center;
+  }
+  .zone-map-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap:10px;
+  }
+  .zone-tile{
+    border:1px solid rgba(15,23,42,0.12);
+    border-radius:12px;
+    padding:10px;
   }
 </style>
 {% endblock %}

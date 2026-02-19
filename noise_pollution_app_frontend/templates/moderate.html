@@ -39,34 +39,18 @@
             </tr>
           </thead>
 
-          <!-- Hook point -->
           <tbody id="reportsTable">
-            <tr data-report-id="R102">
-              <td>#R102</td><td>Zone A</td><td>Evening</td><td>Nightlife</td><td>High</td>
-              <td><span class="badge bg-warning-subtle text-warning status-badge">Under review</span></td>
-              <td class="action-buttons">
-                <button class="btn btn-sm btn-success me-1 moderation-btn" type="button" data-action="valid">Valid</button>
-                <button class="btn btn-sm btn-outline-secondary me-1 moderation-btn" type="button" data-action="duplicate">Duplicate</button>
-                <button class="btn btn-sm btn-outline-danger moderation-btn" type="button" data-action="invalid">Invalid</button>
-              </td>
-            </tr>
-            <tr data-report-id="R103">
-              <td>#R103</td><td>Zone C</td><td>Morning</td><td>Construction</td><td>Medium</td>
-              <td><span class="badge bg-warning-subtle text-warning status-badge">Under review</span></td>
-              <td class="action-buttons">
-                <button class="btn btn-sm btn-success me-1 moderation-btn" type="button" data-action="valid">Valid</button>
-                <button class="btn btn-sm btn-outline-secondary me-1 moderation-btn" type="button" data-action="duplicate">Duplicate</button>
-                <button class="btn btn-sm btn-outline-danger moderation-btn" type="button" data-action="invalid">Invalid</button>
-              </td>
-            </tr>
-            <tr data-report-id="R104">
-              <td>#R104</td><td>Zone B</td><td>Night</td><td>Traffic</td><td>Low</td>
-              <td><span class="badge bg-success-subtle text-success status-badge">Validated</span></td>
-              <td class="text-muted small">Reviewed</td>
+            <tr>
+              <td colspan="7" class="text-muted small">Loading reports…</td>
             </tr>
           </tbody>
 
         </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <div id="moderationPageInfo" class="small text-muted">Page 1</div>
+        <button id="moderationNextPage" class="btn btn-outline-secondary btn-sm" type="button">Next page</button>
       </div>
     </div>
   </div>

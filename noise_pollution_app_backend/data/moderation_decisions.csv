@@ -329,8 +329,7 @@ MOD00327,REP00366,valid,clear description,2025-10-05T12:00:00Z
 MOD00328,REP00106,valid,multiple reports corroborate,2025-11-21T05:00:00Z
 MOD00329,REP00350,valid,clear description,2025-10-28T04:00:00Z
 MOD00330,REP00116,valid,multiple reports corroborate,2025-11-29T10:00:00Z
-MOD331,R102,valid,Select reason,2026-02-17 09:24:42.519285
-MOD332,R103,valid,Select reason,2026-02-17 09:24:43.713411
-MOD333,R103,duplicate,Select reason,2026-02-17 09:54:26.623809
-MOD334,R102,invalid,Select reason,2026-02-17 09:54:27.627681
-MOD335,R102,duplicate,Insufficient information - brug,2026-02-17 09:54:43.222370
+MOD00331,REP00651,valid,clear description,2026-02-17T09:24:42Z
+MOD00332,REP00652,valid,clear description,2026-02-17T09:24:43Z
+MOD00333,REP00652,duplicate,matches existing open report,2026-02-17T09:54:26Z
+MOD00334,REP00651,invalid,insufficient detail,2026-02-17T09:54:27Z

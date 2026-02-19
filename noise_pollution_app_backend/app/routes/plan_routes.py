@@ -1,11 +1,10 @@
 """
 Routes for intervention plans in the Noise Pollution Monitoring API.
 
-This module defines blueprints for creating, updating, and comparing intervention plans.
+This file defines blueprints for creating and updating intervention plans.
 """
 
 import pandas as pd
-import os
 from flask import Blueprint, request, jsonify
 from ..auth import check_role
 from .. import data_loader
@@ -69,7 +68,10 @@ def create_plan():
 
     selected = data_loader.interventions[data_loader.interventions['intervention_id'].isin(interventions_selected)]
     cost = selected['cost_band'].map({'low': 1000, 'medium': 5000, 'high': 10000}).sum()
-    impact = selected['impact_range_db'].str.split('-').apply(lambda x: (float(x[0]) + float(x[1])) / 2).sum()
+    if 'impact_range_db_low' in selected.columns and 'impact_range_db_high' in selected.columns:
+        impact = ((selected['impact_range_db_low'].astype(float) + selected['impact_range_db_high'].astype(float)) / 2).sum()
+    else:
+        impact = selected['impact_range_db'].str.split('-').apply(lambda x: (float(x[0]) + float(x[1])) / 2).sum()
 
     new_plan = pd.DataFrame({
         'plan_id': [generate_id('P', data_loader.plans)],
@@ -112,64 +114,4 @@ def update_plan_status(plan_id):
     save_csv(data_loader.plans, build_csv_path(data_loader.DATA_DIR, 'plans.csv'))
     return jsonify({'message': 'Plan updated'}), 200
 
-def _calculate_plan_comparison(plan_ids):
-    """
-    Calculate comparison metrics for multiple plans.
-    
-    Args:
-        plan_ids (list): List of plan IDs to compare.
-    
-    Returns:
-        dict: Comparison metrics and plan details.
-    """
-    scenario_plans = data_loader.plans[data_loader.plans['plan_id'].isin(plan_ids)]
-    
-    # Avoid division by zero
-    total_zones = len(data_loader.zones) if len(data_loader.zones) > 0 else 1
-    coverage = float(len(scenario_plans) / total_zones * 100) if len(data_loader.zones) > 0 else 0.0
-    
-    return {
-        'plans': scenario_plans.to_dict(orient='records'),
-        'total_cost': float(scenario_plans['budget'].sum()),
-        'total_impact': float(scenario_plans['expected_impact'].sum()),
-        'coverage': coverage
-    }
-
-@plan_bp.route('/plans/compare', methods=['GET'])
-def compare_plans():
-    """
-    Compare multiple intervention plans.
-
-    Query Parameters:
-        plan_ids (list): List of plan IDs to compare.
-
-    Returns:
-        JSON: Comparison metrics and plan details.
-    """
-    if not check_role('planner'):
-        return jsonify({'error': 'Unauthorized'}), 403
-    plan_ids = request.args.getlist('plan_ids')
-    return jsonify(_calculate_plan_comparison(plan_ids)), 200
-
-@plan_bp.route('/scenarios', methods=['POST'])
-def compare_scenarios():
-    """
-    Compare multiple intervention plans (scenarios).
-
-    Request Body:
-        plan_ids (list): List of plan IDs to compare.
-
-    Returns:
-        JSON: Comparison metrics (total cost, impact, coverage).
-    """
-    if not check_role('planner'):
-        return jsonify({'error': 'Unauthorized'}), 403
-    data = request.json
-    plan_ids = data['plan_ids']
-    comparison = _calculate_plan_comparison(plan_ids)
-    return jsonify({
-        'total_cost': comparison['total_cost'],
-        'total_impact': comparison['total_impact'],
-        'coverage': comparison['coverage']
-    }), 200
 
