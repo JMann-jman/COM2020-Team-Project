@@ -1,7 +1,7 @@
 """
 Routes for intervention plans in the Noise Pollution Monitoring API.
 
-This file defines blueprints for creating and updating intervention plans.
+This file defines blueprints for creating, comparing, and updating intervention plans.
 """
 
 import pandas as pd
@@ -104,9 +104,18 @@ def update_plan_status(plan_id):
     """
     if not check_role('planner'):
         return jsonify({'error': 'Unauthorized'}), 403
-    data = request.json
-    status = data['status']
+    data = request.get_json(silent=True) or {}
+    status = str(data.get('status', '')).strip()
     notes = data.get('notes', '')
+
+    if not status:
+        return jsonify({'error': 'Missing required field: status'}), 400
+
+    if status not in {'planned', 'in_progress', 'done'}:
+        return jsonify({'error': 'Invalid status value'}), 400
+
+    if plan_id not in set(data_loader.plans['plan_id'].astype(str)):
+        return jsonify({'error': 'Plan not found'}), 404
 
     data_loader.plans.loc[data_loader.plans['plan_id'] == plan_id, 'status'] = status
     if notes:
@@ -114,4 +123,59 @@ def update_plan_status(plan_id):
     save_csv(data_loader.plans, build_csv_path(data_loader.DATA_DIR, 'plans.csv'))
     return jsonify({'message': 'Plan updated'}), 200
 
+def _calculate_plan_comparison(plan_ids):
+    """
+    Calculate comparison metrics for multiple plans.
+    
+    Args:
+        plan_ids (list): List of plan IDs to compare.
+    
+    Returns:
+        dict: Comparison metrics and plan details.
+    """
+    scenario_plans = data_loader.plans[data_loader.plans['plan_id'].isin(plan_ids)]
 
+    # Avoid division by zero
+    total_zones = len(data_loader.zones) if len(data_loader.zones) > 0 else 1
+    coverage = float(len(scenario_plans) / total_zones * 100) if len(data_loader.zones) > 0 else 0.0
+
+    return {
+        'plans': scenario_plans.to_dict(orient='records'),
+        'total_cost': float(scenario_plans['budget'].sum()),
+        'total_impact': float(scenario_plans['expected_impact'].sum()),
+        'coverage': coverage
+    }
+
+@plan_bp.route('/plans/compare', methods=['GET'])
+def compare_plans():
+    """
+    Compare multiple intervention plans.
+    Query Parameters:
+        plan_ids (list): List of plan IDs to compare.
+    Returns:
+        JSON: Comparison metrics and plan details.
+    """
+    if not check_role('planner'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    plan_ids = request.args.getlist('plan_ids')
+    return jsonify(_calculate_plan_comparison(plan_ids)), 200
+
+@plan_bp.route('/scenarios', methods=['POST'])
+def compare_scenarios():
+    """
+    Compare multiple intervention plans (scenarios).
+    Request Body:
+        plan_ids (list): List of plan IDs to compare.
+    Returns:
+        JSON: Comparison metrics (total cost, impact, coverage).
+    """
+    if not check_role('planner'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json
+    plan_ids = data['plan_ids']
+    comparison = _calculate_plan_comparison(plan_ids)
+    return jsonify({
+        'total_cost': comparison['total_cost'],
+        'total_impact': comparison['total_impact'],
+        'coverage': comparison['coverage']
+    }), 200

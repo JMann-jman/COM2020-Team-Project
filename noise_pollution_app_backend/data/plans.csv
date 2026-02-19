@@ -7,7 +7,7 @@ P005,Z03,"['I09', 'I08']",5158,done,15,planner
 P006,Z09,"['I04', 'I12', 'I07', 'I08', 'I05']",3693,done,17,planner
 P007,Z01,['I08'],7420,done,20,planner
 P008,Z11,"['I08', 'I04', 'I09', 'I13', 'I01']",2934,planned,7,planner
-P009,Z04,['I11'],6735,planned,9,planner
+P009,Z04,['I11'],6735,in_progress,9,planner
 P010,Z04,"['I04', 'I06', 'I03', 'I13', 'I15']",8626,in_progress,15,planner
 P011,Z01,"['I05', 'I13', 'I09']",1491,in_progress,12,planner
 P012,Z11,"['I05', 'I15']",7539,done,13,planner

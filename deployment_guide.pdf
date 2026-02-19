@@ -1,22 +1,22 @@
-# Deployment Guide
+Deployment Guide
 
-## Prerequisites
+Prerequisites
 - Python 3.8+
 - Virtual environment
 
-## Setup
+Setup
 1. Create virtual environment: `python -m venv venv`
 2. Activate: `venv\Scripts\activate` (Windows)
 3. Install dependencies: `pip install -r requirements.txt`
 4. Run data seeder: `python data_seeder.py`
 
-## Running the App
+Running the App
 - `python backend_app.py`
 
 
-## How to Run Tests
+How to Run Tests
 
-### Automated test suite (mandatory)
+Automated test suite:
 From repository root:
 
 1. Install dependencies:
@@ -27,16 +27,14 @@ From repository root:
 The suite covers filtering, hotspot detection, incident submission/moderation,
 deduplication flagging, exports, and role protection.
 
-### Manual end-to-end tests (mandatory)
+Manual end-to-end tests:
 1. Start backend:
 	- `python noise_pollution_app_backend/backend_app.py`
 2. Start frontend:
 	- `python noise_pollution_app_frontend/app.py`
 3. Execute scenarios in:
-	- `4_technical/manual_test_plan.md`
-4. Record results in:
-	- `4_technical/testing_evidence.md`
-5. Export evidence to PDF for submission as:
+	- `manual_test_plan.md`
+4. Export evidence to PDF for submission as:
 	- `4_technical/testing_evidence.pdf`
 
 
@@ -45,4 +43,4 @@ deduplication flagging, exports, and role protection.
 - No secrets required for demo.
 
 ## Repository URL
-- Included in 0_admin/submission.txt
+- https://github.com/JMann-jman/COM2020-Team-Project

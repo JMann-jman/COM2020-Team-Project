@@ -6,7 +6,7 @@ This file defines blueprints for calculating and retrieving success metrics.
 
 from flask import Blueprint, jsonify
 from ..auth import check_role
-from ..data_loader import observations, hotspots, decisions
+from .. import data_loader
 
 success_bp = Blueprint('success', __name__)
 
@@ -22,6 +22,10 @@ def success_measures():
         return jsonify({'error': 'Unauthorized'}), 403
 
     # Hotspot validity: Fraction of hotspots that align with top 5 high-noise zones
+    observations = data_loader.observations
+    hotspots = data_loader.hotspots
+    decisions = data_loader.decisions
+
     high_noise_zones = observations.groupby('zone_id')['value_db'].mean().nlargest(5).index.tolist()
     hotspot_zones = hotspots['zone_id'].tolist()
     # Avoid division by zero

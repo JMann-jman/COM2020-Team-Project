@@ -176,6 +176,8 @@ def get_progress():
 @quest_bp.route('/quest/reset', methods=['POST'])
 def reset_progress():
     """Reset user's quest progress (useful for testing)."""
+    if not check_role('community'):
+        return jsonify({'error': 'Unauthorized'}), 403
     user_id = _get_user_id()
     _progress[user_id] = {'completed': {}, 'badges': []}
     return jsonify({'status': 'reset'})

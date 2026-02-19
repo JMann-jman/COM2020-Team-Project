@@ -114,7 +114,13 @@ def get_hotspots():
     """
     if not check_role('community'):
         return jsonify({'error': 'Unauthorized'}), 403
-    top_n = int(request.args.get('top', 10))
+    top_raw = request.args.get('top', '10')
+    try:
+        top_n = int(top_raw)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'Invalid top parameter'}), 400
+    if top_n <= 0:
+        return jsonify({'error': 'top must be a positive integer'}), 400
 
     observations = data_loader.observations.copy()
     reports = data_loader.reports.copy()
