@@ -39,11 +39,18 @@ async function loadZones() {
   );
   if (zones) {
     console.log('Zones loaded:', zones);
+    window.zonesCache = zones;
     populateZoneSelect(zones);
   } else {
     console.warn('No zones returned from API');
   }
   return zones;
+}
+
+function getZoneName(zoneId) {
+  const zones = window.zonesCache || [];
+  const match = zones.find(z => z.zone_id === zoneId);
+  return match ? match.name : zoneId;
 }
 
 // Load interventions and populate dropdowns
@@ -627,8 +634,13 @@ async function submitIncidentReport(event) {
     } else {
       // Success
       if (successEl) {
-        successEl.className = 'alert alert-success mt-4';
-        successEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Report submitted successfully! A planner will review it for validity/duplication.';
+        if (result.is_duplicate) {
+          successEl.className = 'alert alert-warning mt-4';
+          successEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>Report submitted, but it looks similar to an existing report. A planner will review it and may mark it as duplicate.';
+        } else {
+          successEl.className = 'alert alert-success mt-4';
+          successEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Report submitted successfully! A planner will review it for validity/duplication.';
+        }
         successEl.classList.remove('d-none');
       }
       event.target.reset();
@@ -1188,20 +1200,54 @@ function showBadgeNotification(badge) {
 const MODERATION_PAGE_SIZE = 10;
 let moderationReportsCache = [];
 let moderationCurrentPage = 0;
+let moderationActiveFilter = 'all';
 
 async function initModeration() {
   const nextPageBtn = document.getElementById('moderationNextPage');
   if (nextPageBtn) {
     nextPageBtn.addEventListener('click', () => {
+      const filtered = getFilteredReports();
       const nextStart = (moderationCurrentPage + 1) * MODERATION_PAGE_SIZE;
-      if (nextStart < moderationReportsCache.length) {
+      if (nextStart < filtered.length) {
         moderationCurrentPage += 1;
         renderModerationPage();
       }
     });
   }
 
+  const prevPageBtn = document.getElementById('moderationPrevPage');
+  if (prevPageBtn) {
+    prevPageBtn.addEventListener('click', () => {
+      if (moderationCurrentPage > 0) {
+        moderationCurrentPage -= 1;
+        renderModerationPage();
+      }
+    });
+  }
+
+  document.getElementById('moderationFilterTabs')?.addEventListener('click', e => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    document.querySelectorAll('#moderationFilterTabs .nav-link').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    moderationActiveFilter = btn.dataset.filter;
+    moderationCurrentPage = 0;
+    renderModerationPage();
+  });
+
+  document.getElementById('refreshReportsBtn')?.addEventListener('click', loadModerationReports);
+
   await loadModerationReports();
+}
+
+function getFilteredReports() {
+  if (moderationActiveFilter === 'pending') {
+    return moderationReportsCache.filter(r => ['pending', 'under_review'].includes(String(r.status || '').toLowerCase()));
+  }
+  if (moderationActiveFilter === 'reviewed') {
+    return moderationReportsCache.filter(r => !['pending', 'under_review'].includes(String(r.status || '').toLowerCase()));
+  }
+  return moderationReportsCache;
 }
 
 function formatModerationStatus(status) {
@@ -1226,24 +1272,34 @@ function buildModerationRow(report) {
   row.dataset.reportId = report.report_id;
 
   const reportId = report.report_id || 'N/A';
-  const zone = report.zone_id || 'N/A';
+  const zone = getZoneName(report.zone_id) || report.zone_id || 'N/A';
   const timeWindow = report.time_window || 'N/A';
-  const category = report.category || 'N/A';
-  const severity = report.severity || '—';
+  const CATEGORY_LABELS = { traffic: 'Traffic', music: 'Music / Nightlife', construction: 'Construction', machinery: 'Machinery', neighbours: 'Neighbours', other: 'Other' };
+  const category = CATEGORY_LABELS[report.category] || report.category || 'N/A';
+  const description = report.description_stub || '—';
   const statusInfo = formatModerationStatus(report.status);
   const isReviewable = ['pending', 'under_review'].includes(String(report.status || '').toLowerCase());
 
+  let submittedLabel = '—';
+  if (report.timestamp) {
+    const d = new Date(report.timestamp);
+    if (!isNaN(d)) {
+      submittedLabel = d.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
+    }
+  }
+
   row.innerHTML = `
-    <td>#${reportId}</td>
-    <td>${zone}</td>
-    <td>${timeWindow}</td>
+    <td class="text-muted small">#${reportId}</td>
+    <td><span class="badge bg-secondary-subtle text-secondary">${zone}</span></td>
     <td>${category}</td>
-    <td>${severity}</td>
+    <td class="small">${timeWindow}</td>
+    <td class="small text-muted">${submittedLabel}</td>
+    <td class="small text-muted" style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${description.replace(/"/g, '&quot;')}">${description}</td>
     <td><span class="${statusInfo.className}">${statusInfo.label}</span></td>
     <td class="action-buttons">
       ${isReviewable
         ? `<button class="btn btn-sm btn-success me-1 moderation-btn" type="button" data-action="valid">Valid</button>
-           <button class="btn btn-sm btn-outline-secondary me-1 moderation-btn" type="button" data-action="duplicate">Duplicate</button>
+           <button class="btn btn-sm btn-outline-secondary me-1 moderation-btn" type="button" data-action="duplicate">Dup</button>
            <button class="btn btn-sm btn-outline-danger moderation-btn" type="button" data-action="invalid">Invalid</button>`
         : '<span class="text-muted small">Reviewed</span>'}
     </td>
@@ -1258,44 +1314,64 @@ function buildModerationRow(report) {
   return row;
 }
 
+function renderModerationStats(reports) {
+  const pending = reports.filter(r => ['pending', 'under_review'].includes(String(r.status || '').toLowerCase())).length;
+  const valid = reports.filter(r => String(r.status || '').toLowerCase() === 'valid').length;
+  const other = reports.filter(r => ['duplicate', 'invalid'].includes(String(r.status || '').toLowerCase())).length;
+  const statTotal = document.getElementById('statTotal');
+  const statPending = document.getElementById('statPending');
+  const statValid = document.getElementById('statValid');
+  const statOther = document.getElementById('statOther');
+  if (statTotal) statTotal.textContent = reports.length;
+  if (statPending) statPending.textContent = pending;
+  if (statValid) statValid.textContent = valid;
+  if (statOther) statOther.textContent = other;
+}
+
 function renderModerationPage() {
   const tableBody = document.getElementById('reportsTable');
   const pageInfo = document.getElementById('moderationPageInfo');
   const nextPageBtn = document.getElementById('moderationNextPage');
+  const prevPageBtn = document.getElementById('moderationPrevPage');
+  const filterResultCount = document.getElementById('filterResultCount');
   if (!tableBody) return;
+
+  const filtered = getFilteredReports();
 
   tableBody.innerHTML = '';
 
-  if (moderationReportsCache.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="7" class="text-muted small">No reports available.</td></tr>';
-    if (pageInfo) pageInfo.textContent = 'Page 0';
+  if (filtered.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="8" class="text-muted small">No reports found.</td></tr>';
+    if (pageInfo) pageInfo.textContent = 'Page 0 of 0';
     if (nextPageBtn) nextPageBtn.disabled = true;
+    if (prevPageBtn) prevPageBtn.disabled = true;
+    if (filterResultCount) filterResultCount.textContent = '';
     return;
   }
 
   const start = moderationCurrentPage * MODERATION_PAGE_SIZE;
   const end = start + MODERATION_PAGE_SIZE;
-  const pageReports = moderationReportsCache.slice(start, end);
+  const pageReports = filtered.slice(start, end);
   pageReports.forEach(report => {
     tableBody.appendChild(buildModerationRow(report));
   });
 
-  const totalPages = Math.ceil(moderationReportsCache.length / MODERATION_PAGE_SIZE);
+  const totalPages = Math.ceil(filtered.length / MODERATION_PAGE_SIZE);
   if (pageInfo) {
     pageInfo.textContent = `Page ${moderationCurrentPage + 1} of ${totalPages}`;
   }
-
-  if (nextPageBtn) {
-    nextPageBtn.disabled = moderationCurrentPage >= totalPages - 1;
+  if (filterResultCount) {
+    filterResultCount.textContent = `${filtered.length} report${filtered.length !== 1 ? 's' : ''}`;
   }
+  if (nextPageBtn) nextPageBtn.disabled = moderationCurrentPage >= totalPages - 1;
+  if (prevPageBtn) prevPageBtn.disabled = moderationCurrentPage === 0;
 }
 
 async function loadModerationReports() {
   const tableBody = document.getElementById('reportsTable');
   if (!tableBody) return;
 
-  API.setRole('planner');
-  const reports = await executeApiCall(() => API.getReports(), 'Failed to load reports for moderation');
+  const reports = await executeApiCall(() => API.getReports(null, 'planner'), 'Failed to load reports for moderation');
   if (!reports) {
     tableBody.innerHTML = '<tr><td colspan="7" class="text-danger small">Could not load reports.</td></tr>';
     return;
@@ -1308,28 +1384,57 @@ async function loadModerationReports() {
   });
 
   moderationReportsCache = pendingFirst;
-  const totalPages = Math.ceil(moderationReportsCache.length / MODERATION_PAGE_SIZE);
+  renderModerationStats(moderationReportsCache);
+  const totalPages = Math.ceil(getFilteredReports().length / MODERATION_PAGE_SIZE);
   if (moderationCurrentPage >= totalPages) {
     moderationCurrentPage = Math.max(0, totalPages - 1);
   }
   renderModerationPage();
 }
 
+const ACTION_DEFAULT_REASONS = {
+  valid: 'Valid and relevant',
+  duplicate: 'Matches existing report (same zone + time)',
+  invalid: 'Insufficient information'
+};
+
 async function handleModeration(e) {
   const btn = e.currentTarget;
   const action = btn.dataset.action;
   const row = btn.closest('tr');
   const reportId = row.dataset.reportId;
-  
-  // Get the reason from the dropdown
+
+  // Two-click confirmation: first click arms the button, second fires
+  if (!btn.dataset.confirming) {
+    btn.dataset.confirming = '1';
+    const originalText = btn.textContent;
+    btn.textContent = 'Confirm?';
+    btn.classList.add('btn-warning');
+    btn.classList.remove('btn-success', 'btn-outline-secondary', 'btn-outline-danger');
+    // Auto-set reason dropdown to match the chosen action
+    const reasonSelect = document.getElementById('decision_reason');
+    if (reasonSelect) reasonSelect.value = ACTION_DEFAULT_REASONS[action];
+    setTimeout(() => {
+      if (btn.dataset.confirming) {
+        delete btn.dataset.confirming;
+        btn.textContent = originalText;
+        btn.classList.remove('btn-warning');
+        const cls = action === 'valid' ? 'btn-success' : action === 'duplicate' ? 'btn-outline-secondary' : 'btn-outline-danger';
+        btn.classList.add(cls);
+      }
+    }, 3000);
+    return;
+  }
+  delete btn.dataset.confirming;
+
+  // Get the reason from the dropdown (already set to match action)
   const reasonSelect = document.getElementById('decision_reason');
-  const reason = reasonSelect?.value || 'Valid and relevant';
-  
+  const reason = reasonSelect?.value || ACTION_DEFAULT_REASONS[action];
+
   // Get optional notes
   const notesInput = document.getElementById('decision_notes');
   const notes = notesInput?.value || '';
-  
-  // Combine reason and notes
+
   const fullReason = notes ? `${reason} - ${notes}` : reason;
 
   // Disable all buttons in this row while processing

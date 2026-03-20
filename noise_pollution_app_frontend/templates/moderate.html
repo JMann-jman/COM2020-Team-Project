@@ -8,73 +8,117 @@
     <div>
       <span class="pill pill-dark"><i class="bi bi-shield-check me-1"></i>Planner view</span>
       <h1 class="h2 fw-bold mb-1 mt-2">Moderation Panel</h1>
-      <p class="muted mb-0">Review incident reports and mark them as valid, duplicate, or invalid (with reasons).</p>
+      <p class="muted mb-0">Review incident reports and mark them as valid, duplicate, or invalid.</p>
     </div>
+    <button class="btn btn-outline-secondary btn-sm" id="refreshReportsBtn" type="button">
+      <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+    </button>
   </div>
 </header>
 
 <main class="container pb-5">
-  <div class="alert alert-light border d-flex gap-2 align-items-start mb-3">
-    <i class="bi bi-info-circle"></i>
-    <div class="small">
-      Moderation decisions affect hotspot detection and planning. Reasons are recorded for transparency.
+
+  <!-- Stats row -->
+  <div class="row g-3 mb-4" id="moderationStats">
+    <div class="col-6 col-md-3">
+      <div class="card app-card text-center py-3">
+        <div class="h3 fw-bold mb-0" id="statTotal">—</div>
+        <div class="small text-muted">Total reports</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card app-card text-center py-3">
+        <div class="h3 fw-bold mb-0 text-warning" id="statPending">—</div>
+        <div class="small text-muted">Pending review</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card app-card text-center py-3">
+        <div class="h3 fw-bold mb-0 text-success" id="statValid">—</div>
+        <div class="small text-muted">Validated</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card app-card text-center py-3">
+        <div class="h3 fw-bold mb-0 text-secondary" id="statOther">—</div>
+        <div class="small text-muted">Duplicate / Invalid</div>
+      </div>
     </div>
   </div>
 
   <div class="card app-card">
     <div class="card-body">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-          <div class="h6 mb-1">Incident reports</div>
-          <div class="muted small">Table is a hook point for backend-rendered data.</div>
-        </div>
-        <span class="badge text-bg-light">Prototype v0.1</span>
+
+      <!-- Filter tabs -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <ul class="nav nav-pills nav-sm" id="moderationFilterTabs">
+          <li class="nav-item">
+            <button class="nav-link active" data-filter="all">All</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-filter="pending">Pending</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-filter="reviewed">Reviewed</button>
+          </li>
+        </ul>
+        <div class="small text-muted" id="filterResultCount"></div>
       </div>
 
       <div class="table-responsive">
         <table class="table align-middle">
           <thead class="table-light">
             <tr class="small text-muted">
-              <th>ID</th><th>Zone</th><th>Time window</th><th>Category</th><th>Severity</th><th>Status</th><th>Action</th>
+              <th>ID</th>
+              <th>Zone</th>
+              <th>Category</th>
+              <th>Time window</th>
+              <th>Submitted</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
-
           <tbody id="reportsTable">
             <tr>
-              <td colspan="7" class="text-muted small">Loading reports…</td>
+              <td colspan="8" class="text-muted small">Loading reports…</td>
             </tr>
           </tbody>
-
         </table>
       </div>
 
+      <!-- Pagination -->
       <div class="d-flex justify-content-between align-items-center mt-2">
         <div id="moderationPageInfo" class="small text-muted">Page 1</div>
-        <button id="moderationNextPage" class="btn btn-outline-secondary btn-sm" type="button">Next page</button>
+        <div class="d-flex gap-2">
+          <button id="moderationPrevPage" class="btn btn-outline-secondary btn-sm" type="button" disabled>
+            <i class="bi bi-chevron-left"></i> Prev
+          </button>
+          <button id="moderationNextPage" class="btn btn-outline-secondary btn-sm" type="button">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Decision panel -->
   <div class="card app-card mt-3">
     <div class="card-body">
-      <div class="h6 mb-2">Decision reason (for selected report)</div>
+      <div class="h6 mb-2">Decision reason <span class="text-muted fw-normal small">(applied when you click Valid / Duplicate / Invalid above)</span></div>
       <div class="row g-2">
         <div class="col-md-5">
           <select class="form-select" id="decision_reason" name="decision_reason">
-            <option selected disabled>Select reason</option>
-            <option>Matches existing report (same zone + time)</option>
-            <option>Insufficient information</option>
-            <option>Outside scope</option>
-            <option>Valid and relevant</option>
+            <option value="Valid and relevant" selected>Valid and relevant</option>
+            <option value="Matches existing report (same zone + time)">Matches existing report (same zone + time)</option>
+            <option value="Insufficient information">Insufficient information</option>
+            <option value="Outside scope">Outside scope</option>
           </select>
         </div>
         <div class="col-md-7">
           <input class="form-control" id="decision_notes" name="decision_notes"
                  placeholder="Optional notes (auditable, not public).">
         </div>
-      </div>
-      <div class="small text-muted mt-2">
-        In Sprint 2 this will be tied to a selected row + saved in the moderation log.
       </div>
     </div>
   </div>
@@ -84,5 +128,6 @@
       <i class="bi bi-fire me-1"></i>View updated hotspots
     </a>
   </div>
+
 </main>
 {% endblock %}

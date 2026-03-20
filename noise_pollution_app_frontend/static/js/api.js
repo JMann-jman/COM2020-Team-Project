@@ -102,36 +102,28 @@ const API = {
   /**
    * Get all incident reports
    */
-  getReports(status = null) {
+  getReports(status = null, role = null) {
     const query = status ? `?status=${encodeURIComponent(status)}` : '';
-    return this.request(`/reports${query}`);
+    const opts = role ? { headers: { 'Role': role } } : {};
+    return this.request(`/reports${query}`, opts);
   },
 
   /**
    * Create a new intervention plan
    */
   createPlan(data) {
-    const originalRole = this.role;
-    this.role = 'planner';
-    const promise = this.request('/plans', {
+    return this.request('/plans', {
       method: 'POST',
+      headers: { 'Role': 'planner' },
       body: JSON.stringify(data)
-    });
-    // Restore original role after request
-    return promise.finally(() => {
-      this.role = originalRole;
     });
   },
 
   updatePlan(planId, data) {
-    const originalRole = this.role;
-    this.role = 'planner';
-    const promise = this.request(`/plans/${planId}`, {
+    return this.request(`/plans/${planId}`, {
       method: 'PUT',
+      headers: { 'Role': 'planner' },
       body: JSON.stringify(data)
-    });
-    return promise.finally(() => {
-      this.role = originalRole;
     });
   },
 
@@ -203,16 +195,10 @@ const API = {
    * @param {string} reason - Reason for the decision
    */
   moderateReport(reportId, decision, reason) {
-    // Set role to planner for moderation
-    const originalRole = this.role;
-    this.role = 'planner';
-    const promise = this.request(`/reports/${reportId}`, {
+    return this.request(`/reports/${reportId}`, {
       method: 'PUT',
+      headers: { 'Role': 'planner' },
       body: JSON.stringify({ decision, reason })
-    });
-    // Restore original role after request
-    return promise.finally(() => {
-      this.role = originalRole;
     });
   }
 };

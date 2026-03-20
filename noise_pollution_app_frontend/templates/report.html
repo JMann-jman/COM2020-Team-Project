@@ -41,7 +41,7 @@
             <span class="badge text-bg-light">Prototype v0.1</span>
           </div>
 
-          <form id="reportForm" onsubmit="submitIncidentReport(event)" novalidate>
+          <form id="reportForm" novalidate>
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label fw-semibold" for="zone">Zone *</label>
@@ -55,7 +55,11 @@
                 <label class="form-label fw-semibold" for="time_window">Time window *</label>
                 <select class="form-select" id="time_window" name="time_window" required>
                   <option value="" selected disabled>Select a time window</option>
-                  <option>Morning</option><option>Afternoon</option><option>Evening</option><option>Night</option>
+                  <option value="morning">Morning (06–09)</option>
+                  <option value="day">Day (09–17)</option>
+                  <option value="evening">Evening (17–22)</option>
+                  <option value="late">Late night (22–24)</option>
+                  <option value="night">Night (00–06)</option>
                 </select>
                 <div class="invalid-feedback">Please select a time window.</div>
               </div>
@@ -64,7 +68,12 @@
                 <label class="form-label fw-semibold" for="category">Category *</label>
                 <select class="form-select" id="category" name="category" required>
                   <option value="" selected disabled>Select a category</option>
-                  <option>Traffic</option><option>Nightlife</option><option>Construction</option><option>General</option>
+                  <option value="traffic">Traffic</option>
+                  <option value="music">Music / Nightlife</option>
+                  <option value="construction">Construction</option>
+                  <option value="machinery">Machinery</option>
+                  <option value="neighbours">Neighbours</option>
+                  <option value="other">Other</option>
                 </select>
                 <div class="invalid-feedback">Please select a category.</div>
               </div>
