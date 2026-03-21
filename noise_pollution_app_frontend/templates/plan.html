@@ -14,9 +14,9 @@
       <p class="muted mb-0">Estimate cost, feasibility, and expected noise reduction for a selected intervention.</p>
     </div>
 
-    <button class="btn btn-outline-secondary btn-pill" disabled
-            data-bs-toggle="tooltip" data-bs-title="Planned for Sprint 2">
-      <i class="bi bi-file-earmark-arrow-down me-1"></i>Export plan
+    <button class="btn btn-outline-secondary btn-pill" id="exportStakeholderBtn" type="button"
+            data-bs-toggle="modal" data-bs-target="#stakeholderReportModal">
+      <i class="bi bi-file-earmark-arrow-down me-1"></i>Export report
     </button>
   </div>
 </header>
@@ -167,4 +167,120 @@
     </div>
   </div>
 </main>
+
+<!-- Stakeholder Report Modal -->
+<div class="modal fade" id="stakeholderReportModal" tabindex="-1"
+     aria-labelledby="stakeholderReportLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stakeholderReportLabel">
+          <i class="bi bi-file-earmark-pdf me-1"></i>Stakeholder Report
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="reportZoneFilter">Zone filter</label>
+          <select class="form-select" id="reportZoneFilter">
+            <option value="">All zones</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Include sections</label>
+          <div class="d-flex flex-column gap-1">
+            <div class="form-check">
+              <input class="form-check-input report-section-check" type="checkbox" id="secSummary" value="summary" checked>
+              <label class="form-check-label" for="secSummary">Executive Summary &amp; Noise Landscape</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input report-section-check" type="checkbox" id="secHotspots" value="hotspots" checked>
+              <label class="form-check-label" for="secHotspots">Top Hotspots</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input report-section-check" type="checkbox" id="secReports" value="reports" checked>
+              <label class="form-check-label" for="secReports">Incident Reports</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input report-section-check" type="checkbox" id="secPlans" value="plans" checked>
+              <label class="form-check-label" for="secPlans">Intervention Plans</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-pill"
+                data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-dark btn-pill" id="downloadReportBtn">
+          <i class="bi bi-download me-1"></i>Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const modal = document.getElementById('stakeholderReportModal');
+  if (!modal) return;
+
+  modal.addEventListener('show.bs.modal', function () {
+    const sel = document.getElementById('reportZoneFilter');
+    if (sel && sel.options.length <= 1) {
+      fetch(API.baseURL + '/zones', { headers: { 'Role': 'planner' } })
+        .then(r => r.json())
+        .then(zones => {
+          zones.forEach(z => {
+            const opt = document.createElement('option');
+            opt.value = z.zone_id;
+            opt.textContent = z.name;
+            sel.appendChild(opt);
+          });
+        })
+        .catch(() => {});
+    }
+  });
+
+  document.getElementById('downloadReportBtn').addEventListener('click', async function () {
+    const zoneId = document.getElementById('reportZoneFilter').value;
+    const sections = [...document.querySelectorAll('.report-section-check:checked')]
+      .map(el => el.value);
+
+    if (sections.length === 0) {
+      alert('Please select at least one section.');
+      return;
+    }
+
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Generating…';
+
+    try {
+      const params = new URLSearchParams({ sections: sections.join(',') });
+      if (zoneId) params.append('zone_id', zoneId);
+
+      const res = await fetch(`${API.baseURL}/export/stakeholder-report?${params}`, {
+        headers: { 'Role': 'planner' }
+      });
+      if (!res.ok) throw new Error('Request failed');
+
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'stakeholder-report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+
+      bootstrap.Modal.getInstance(modal).hide();
+    } catch (e) {
+      alert('Could not generate report. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-download me-1"></i>Download PDF';
+    }
+  });
+}());
+</script>
 {% endblock %}

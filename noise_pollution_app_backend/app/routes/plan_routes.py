@@ -34,8 +34,8 @@ def get_plans():
         filtered = filtered[filtered['zone_id'] == zone_id]
     if status:
         filtered = filtered[filtered['status'] == status]
-    
-    return jsonify(filtered.to_dict(orient='records'))
+
+    return jsonify(filtered.where(pd.notna(filtered), None).to_dict(orient='records'))
 
 @plan_bp.route('/plans', methods=['POST'])
 def create_plan():
@@ -83,6 +83,8 @@ def create_plan():
         'created_by': ['planner'],
         'notes': [notes]
     })
+    if 'notes' not in data_loader.plans.columns:
+        data_loader.plans['notes'] = ''
     data_loader.plans = pd.concat([data_loader.plans, new_plan], ignore_index=True)
     save_csv(data_loader.plans, build_csv_path(data_loader.DATA_DIR, 'plans.csv'))
     return jsonify({'message': 'Plan created', 'plan_id': new_plan['plan_id'].iloc[0]}), 201
