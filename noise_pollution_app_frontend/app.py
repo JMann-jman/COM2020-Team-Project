@@ -1,9 +1,10 @@
+import os
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Backend API base URL
-BACKEND_URL = "http://localhost:5001"
+# Backend API base URL (override via BACKEND_URL)
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5001")
 
 # Make BACKEND_URL available in templates
 @app.context_processor
@@ -41,4 +42,6 @@ def quest():
     return render_template("quest.html")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000, use_reloader=False)
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() in {"1", "true", "yes", "on"}
+    port = int(os.getenv("FRONTEND_PORT", "5000"))
+    app.run(debug=debug_mode, port=port, use_reloader=False)

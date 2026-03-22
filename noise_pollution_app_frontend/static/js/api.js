@@ -3,7 +3,7 @@
  */
 
 const API = {
-  baseURL: 'http://localhost:5001/api',
+  baseURL: window.API_BASE_URL || 'http://localhost:5001/api',
   
   /**
    * Set default role header for all requests
@@ -132,6 +132,22 @@ const API = {
    */
   getPlans() {
     return this.request('/plans');
+  },
+
+  compareScenarios(planIds) {
+    return this.request('/scenarios', {
+      method: 'POST',
+      headers: { 'Role': 'planner' },
+      body: JSON.stringify({ plan_ids: planIds })
+    });
+  },
+
+  compareScenarioSet(scenarios) {
+    return this.request('/scenarios', {
+      method: 'POST',
+      headers: { 'Role': 'planner' },
+      body: JSON.stringify({ scenarios })
+    });
   },
 
   buildExportUrl(format, dataType = 'observations', filters = {}) {

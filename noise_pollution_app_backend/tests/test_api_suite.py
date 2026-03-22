@@ -1,4 +1,6 @@
 import json
+from pathlib import Path
+import csv
 
 from conftest import headers
 
@@ -159,3 +161,57 @@ def test_role_protection_blocks_planner_route_for_community(client):
     }
     response = client.post('/api/plans', data=json.dumps(payload), headers=headers('community'))
     assert response.status_code == 403
+
+
+def test_scenario_comparison_with_three_plans(client):
+    plans_response = client.get('/api/plans', headers=headers('planner'))
+    assert plans_response.status_code == 200
+    plans = plans_response.get_json()
+    assert len(plans) >= 3
+
+    payload = {'plan_ids': [plans[0]['plan_id'], plans[1]['plan_id'], plans[2]['plan_id']]}
+    response = client.post('/api/scenarios', data=json.dumps(payload), headers=headers('planner'))
+    assert response.status_code == 200
+    body = response.get_json()
+    assert 'total_cost' in body
+    assert 'total_impact' in body
+    assert 'coverage' in body
+    assert body['coverage'] >= 0
+
+
+def test_maintainer_reload_and_status_endpoints(client):
+    status_response = client.get('/api/maintenance/status', headers=headers('maintainer'))
+    assert status_response.status_code == 200
+    status_body = status_response.get_json()
+    assert 'data_counts' in status_body
+    assert status_body['data_counts']['reports'] >= 600
+
+    reload_response = client.post('/api/maintenance/reload', headers=headers('maintainer'))
+    assert reload_response.status_code == 200
+    assert reload_response.get_json()['message'] == 'Data reloaded successfully'
+
+
+def test_create_plan_preserves_plans_csv_format(client):
+    payload = {
+        'zone_id': 'z1',
+        'interventions': ['INT001', 'INT002'],
+        'notes': 'format check note'
+    }
+    response = client.post('/api/plans', data=json.dumps(payload), headers=headers('planner'))
+    assert response.status_code == 201
+
+    import app.data_loader as data_loader
+
+    plans_path = Path(data_loader.DATA_DIR) / 'plans.csv'
+    with plans_path.open('r', newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        columns = reader.fieldnames
+        rows = list(reader)
+
+    assert columns == ['plan_id', 'zone_id', 'interventions_selected', 'budget', 'status', 'expected_impact', 'created_by']
+    assert len(rows) > 0
+
+    last = rows[-1]
+    assert last['zone_id'] == 'Z01'
+    assert last['interventions_selected'].startswith("['I")
+    assert 'INT' not in last['interventions_selected']

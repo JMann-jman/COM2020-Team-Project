@@ -4,6 +4,7 @@ Routes for success measures in the Noise Pollution Monitoring API.
 This file defines blueprints for calculating and retrieving success metrics.
 """
 
+import os
 from flask import Blueprint, jsonify
 from ..auth import check_role
 from .. import data_loader
@@ -43,3 +44,52 @@ def success_measures():
         'reporting_quality': reporting_quality,
         'community_understanding': community_understanding
     })
+
+
+@success_bp.route('/maintenance/status', methods=['GET'])
+def maintenance_status():
+    """Return dataset/testing readiness details for maintainer users."""
+    if not check_role('maintainer'):
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    files = [
+        'zones.csv',
+        'zone_adjacency.csv',
+        'noise_observations.csv',
+        'incident_reports.csv',
+        'moderation_decisions.csv',
+        'interventions.csv',
+        'plans.csv',
+        'missions.csv'
+    ]
+    file_status = {}
+    for filename in files:
+        path = os.path.join(data_loader.DATA_DIR, filename)
+        exists = os.path.exists(path)
+        file_status[filename] = {
+            'exists': exists,
+            'last_modified_utc': os.path.getmtime(path) if exists else None
+        }
+
+    return jsonify({
+        'data_counts': {
+            'zones': int(len(data_loader.zones)),
+            'observations': int(len(data_loader.observations)),
+            'reports': int(len(data_loader.reports)),
+            'decisions': int(len(data_loader.decisions)),
+            'interventions': int(len(data_loader.interventions)),
+            'plans': int(len(data_loader.plans)),
+            'missions': int(len(data_loader.missions))
+        },
+        'files': file_status
+    })
+
+
+@success_bp.route('/maintenance/reload', methods=['POST'])
+def maintenance_reload_data():
+    """Allow maintainers to reload dataset files without restarting the service."""
+    if not check_role('maintainer'):
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data_loader.load_data()
+    return jsonify({'message': 'Data reloaded successfully'}), 200

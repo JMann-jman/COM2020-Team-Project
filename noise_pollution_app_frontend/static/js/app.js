@@ -48,9 +48,20 @@ async function loadZones() {
 }
 
 function getZoneName(zoneId) {
+  if (!zoneId) return 'N/A';
   const zones = window.zonesCache || [];
   const match = zones.find(z => z.zone_id === zoneId);
-  return match ? match.name : zoneId;
+  if (match && match.name) return match.name;
+
+  const raw = String(zoneId).trim().toUpperCase();
+  const idMatch = raw.match(/^Z(\d{1,2})$/);
+  if (idMatch) {
+    const n = Number(idMatch[1]);
+    if (n >= 1 && n <= 26) {
+      return `Zone ${String.fromCharCode(64 + n)}`;
+    }
+  }
+  return raw;
 }
 
 // Load interventions and populate dropdowns
@@ -125,7 +136,32 @@ function populateZoneSelect(zones) {
   console.log('Found zone selects:', zoneSelects.length);
   zoneSelects.forEach(select => {
     console.log('Populating select:', select.id || select.name);
+
+    const isExploreZoneSelect = select.id === 'zone' && window.location.pathname.includes('/explore');
+    if (isExploreZoneSelect && !Array.from(select.options).some(option => option.value === '')) {
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Select a zone...';
+      placeholder.selected = true;
+      select.insertBefore(placeholder, select.firstChild);
+    }
+
+    if (isExploreZoneSelect && !Array.from(select.options).some(option => option.value === 'ALL')) {
+      const allOption = document.createElement('option');
+      allOption.value = 'ALL';
+      allOption.textContent = 'All zones';
+      const placeholderOption = Array.from(select.options).find(option => option.value === '');
+      if (placeholderOption && placeholderOption.nextSibling) {
+        select.insertBefore(allOption, placeholderOption.nextSibling);
+      } else {
+        select.appendChild(allOption);
+      }
+    }
+
     zones.forEach(zone => {
+      if (Array.from(select.options).some(option => option.value === zone.zone_id)) {
+        return;
+      }
       const option = document.createElement('option');
       option.value = zone.zone_id;
       option.textContent = zone.name;
@@ -151,19 +187,15 @@ async function loadExploreData() {
 
   console.log('loadExploreData called with:', { zone, timeWindow, source, category, trendGranularity });
 
-  // Auto-select first zone if none is selected (after zones are loaded)
-  if (!zone && zoneSelect?.options?.length > 1) {
-    zoneSelect.selectedIndex = 1; // Select the first actual option (index 0 is the placeholder)
-    zone = zoneSelect.value;
-    console.log('Auto-selected zone:', zone);
-  }
+  const useAllZones = zone === 'ALL';
 
   if (!zone) {
-    console.warn('No zone selected and no zones available');
     renderExploreTrendChart([]);
     renderZoneMap([]);
-    // Still try to load reports even without a zone
-    await refreshReportsSummary();
+    const container = document.getElementById('noise-data-container');
+    if (container) {
+      container.innerHTML = '<p class="text-muted">Select a zone or choose All zones.</p>';
+    }
     return;
   }
 
@@ -174,7 +206,7 @@ async function loadExploreData() {
   };
 
   await loadAndDisplay(
-    () => API.getNoiseData({ 
+    () => API.getNoiseData(useAllZones ? sharedFilters : {
       zones: [zone],
       ...sharedFilters
     }),
@@ -367,7 +399,7 @@ function renderZoneMap(data) {
       return `
         <div class="zone-tile" style="background:${bg};">
           <div class="fw-semibold small">${zoneName}</div>
-          <div class="muted small">${item.zoneId}</div>
+          <div class="muted small">${zoneName}</div>
           <div class="mt-1"><span class="badge bg-dark">${item.avg.toFixed(1)} dB</span></div>
         </div>
       `;
@@ -396,7 +428,7 @@ function displayNoiseData(data, trendGranularity = 'hour') {
 
   recentRows.forEach(row => {
     html += `<tr>
-      <td>${row.zone_id || 'N/A'}</td>
+      <td><span class="text-nowrap">${getZoneName(row.zone_id)}</span></td>
       <td>${new Date(row.timestamp).toLocaleString()}</td>
       <td>${row.source || 'N/A'}</td>
       <td>${row.value_db || 'N/A'}</td>
@@ -438,10 +470,11 @@ function renderHotspotRankingPage() {
     const severity = Number(hotspot.severity_score || 0);
     const driver = hotspot.rationale || '—';
     const rank = start + index + 1;
+    const zoneLabel = getZoneName(hotspot.zone_id);
     return `
       <tr>
         <td>${rank}</td>
-        <td>${hotspot.zone_id || 'N/A'}<div class="small text-muted">${hotspot.time_window || 'N/A'}</div></td>
+        <td>${zoneLabel}<div class="small text-muted">${hotspot.time_window || 'N/A'}</div></td>
         <td><span class="badge bg-dark">${severity.toFixed(2)}</span></td>
         <td class="small text-muted">${driver}</td>
         <td><a class="btn btn-sm btn-outline-secondary" href="/plan">Plan</a></td>
@@ -473,12 +506,7 @@ function displayHotspots(data) {
   if (!container) return;
 
   const normalizeZoneLabel = (zoneId) => {
-    const raw = String(zoneId || '').trim().toUpperCase();
-    const directMatch = raw.match(/^Z(\d{1,2})$/);
-    if (directMatch) return `Z${directMatch[1].padStart(2, '0')}`;
-    const digitMatch = raw.match(/(\d{1,2})/);
-    if (digitMatch) return `Z${digitMatch[1].padStart(2, '0')}`;
-    return raw || 'N/A';
+    return getZoneName(zoneId);
   };
 
   if (!data || data.length === 0) {
@@ -544,7 +572,7 @@ function displayHotspots(data) {
     }
   }
 
-  const topThree = data.slice(0, 3).map(item => `${item.zone_id} (${Number(item.severity_score || 0).toFixed(2)})`).join(' · ');
+  const topThree = data.slice(0, 3).map(item => `${getZoneName(item.zone_id)} (${Number(item.severity_score || 0).toFixed(2)})`).join(' · ');
   container.innerHTML = `<div class="small text-muted">Top hotspots: ${topThree || 'N/A'}</div>`;
 }
 
@@ -756,7 +784,7 @@ function renderPlansTrackerPage() {
     return `
       <tr data-plan-id="${plan.plan_id}">
         <td>${plan.plan_id}</td>
-        <td>${plan.zone_id}</td>
+        <td>${getZoneName(plan.zone_id)}</td>
         <td class="small">${displayInterventionsForPlan(plan)}</td>
         <td>
           <div class="mb-1">${formatStatusBadge(plan.status)}</div>
@@ -786,6 +814,7 @@ function renderPlansTrackerPage() {
 
 function renderPlansTracker(plans) {
   plansTrackerCache = Array.isArray(plans) ? plans : [];
+  populateScenarioPlanSelectors(plansTrackerCache);
   const totalPages = Math.ceil(plansTrackerCache.length / PLAN_PAGE_SIZE);
   if (totalPages === 0) {
     plansTrackerCurrentPage = 0;
@@ -800,6 +829,161 @@ async function loadPlansTracker() {
   if (plans) {
     renderPlansTracker(plans);
   }
+}
+
+function populateScenarioPlanSelectors(plans) {
+  const selectors = [
+    document.getElementById('scenarioAPlans'),
+    document.getElementById('scenarioBPlans'),
+    document.getElementById('scenarioCPlans')
+  ].filter(Boolean);
+
+  if (selectors.length === 0) return;
+
+  selectors.forEach(sel => {
+    const current = Array.from(sel.selectedOptions || []).map(option => option.value);
+    sel.innerHTML = '';
+    plans.forEach(plan => {
+      const option = document.createElement('option');
+      option.value = plan.plan_id;
+      const baseLabel = `${plan.plan_id} · ${getZoneName(plan.zone_id)} · ${displayInterventionsForPlan(plan)}`;
+      option.dataset.baseLabel = baseLabel;
+      option.textContent = baseLabel;
+      sel.appendChild(option);
+    });
+    current.forEach(value => {
+      const option = Array.from(sel.options).find(item => item.value === value);
+      if (option) option.selected = true;
+    });
+    applyScenarioOptionLabels(sel);
+  });
+
+  setupScenarioSelectorControls();
+}
+
+function applyScenarioOptionLabels(selectEl) {
+  Array.from(selectEl.options).forEach(option => {
+    const baseLabel = option.dataset.baseLabel || option.textContent.replace(/^✓\s+/, '');
+    option.dataset.baseLabel = baseLabel;
+    option.textContent = option.selected ? `✓ ${baseLabel}` : baseLabel;
+  });
+}
+
+function applyScenarioSearchFilter(selectEl, searchValue) {
+  const query = String(searchValue || '').trim().toLowerCase();
+  Array.from(selectEl.options).forEach(option => {
+    const baseLabel = (option.dataset.baseLabel || option.textContent).toLowerCase();
+    option.hidden = query ? !baseLabel.includes(query) : false;
+  });
+}
+
+function setupScenarioSelectorControls() {
+  const configs = [
+    { selectId: 'scenarioAPlans', searchId: 'scenarioASearch' },
+    { selectId: 'scenarioBPlans', searchId: 'scenarioBSearch' },
+    { selectId: 'scenarioCPlans', searchId: 'scenarioCSearch' }
+  ];
+
+  configs.forEach(({ selectId, searchId }) => {
+    const selectEl = document.getElementById(selectId);
+    const searchEl = document.getElementById(searchId);
+    if (!selectEl) return;
+
+    if (!selectEl.dataset.boundScenarioUx) {
+      selectEl.addEventListener('mousedown', (event) => {
+        if (event.target && event.target.tagName === 'OPTION') {
+          event.preventDefault();
+          const option = event.target;
+          option.selected = !option.selected;
+          applyScenarioOptionLabels(selectEl);
+          if (searchEl) {
+            applyScenarioSearchFilter(selectEl, searchEl.value);
+          }
+          selectEl.focus();
+        }
+      });
+
+      selectEl.addEventListener('change', () => {
+        applyScenarioOptionLabels(selectEl);
+        if (searchEl) {
+          applyScenarioSearchFilter(selectEl, searchEl.value);
+        }
+      });
+      selectEl.dataset.boundScenarioUx = '1';
+    }
+
+    if (searchEl && !searchEl.dataset.boundScenarioUx) {
+      searchEl.addEventListener('input', () => {
+        applyScenarioSearchFilter(selectEl, searchEl.value);
+      });
+      searchEl.dataset.boundScenarioUx = '1';
+    }
+
+    applyScenarioOptionLabels(selectEl);
+    if (searchEl) {
+      applyScenarioSearchFilter(selectEl, searchEl.value);
+    }
+  });
+}
+
+function initScenarioComparison() {
+  const compareBtn = document.getElementById('compareScenariosBtn');
+  const resultEl = document.getElementById('scenarioCompareResult');
+  const tableWrap = document.getElementById('scenarioCompareTableWrap');
+  const tableBody = document.getElementById('scenarioCompareTable');
+  if (!compareBtn || !resultEl || !tableWrap || !tableBody) return;
+
+  compareBtn.addEventListener('click', async () => {
+    const getSelectedPlanIds = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return [];
+      return Array.from(el.selectedOptions || []).map(option => option.value).filter(Boolean);
+    };
+
+    const scenarios = [
+      { name: 'Scenario A', plan_ids: getSelectedPlanIds('scenarioAPlans') },
+      { name: 'Scenario B', plan_ids: getSelectedPlanIds('scenarioBPlans') },
+      { name: 'Scenario C', plan_ids: getSelectedPlanIds('scenarioCPlans') }
+    ];
+
+    if (scenarios.some(scenario => scenario.plan_ids.length === 0)) {
+      resultEl.classList.remove('d-none', 'alert-success');
+      resultEl.classList.add('alert', 'alert-warning');
+      tableWrap.classList.add('d-none');
+      resultEl.textContent = 'Select at least one plan in each of Scenario A, B, and C.';
+      return;
+    }
+
+    const comparison = await executeApiCall(
+      () => API.compareScenarioSet(scenarios),
+      'Failed to compare scenarios'
+    );
+    if (!comparison) return;
+
+    const rows = comparison.scenarios || [];
+    if (rows.length === 0) {
+      resultEl.classList.remove('d-none', 'alert-success');
+      resultEl.classList.add('alert', 'alert-warning');
+      tableWrap.classList.add('d-none');
+      resultEl.textContent = 'No scenario comparison data returned.';
+      return;
+    }
+
+    resultEl.classList.remove('d-none', 'alert-warning');
+    resultEl.classList.add('alert', 'alert-success');
+    resultEl.textContent = `Compared ${rows.length} scenarios. Top expected impact: ${rows[0].name}.`;
+
+    tableBody.innerHTML = rows.map(row => `
+      <tr>
+        <td>${row.name}</td>
+        <td>${(row.plan_ids || []).join(', ')}</td>
+        <td>£${Number(row.total_cost || 0).toLocaleString()}</td>
+        <td>${Number(row.total_impact || 0).toFixed(1)} dB</td>
+        <td>${Number(row.coverage || 0).toFixed(1)}%</td>
+      </tr>
+    `).join('');
+    tableWrap.classList.remove('d-none');
+  });
 }
 
 async function handlePlanTrackerSave(event) {
@@ -903,6 +1087,7 @@ async function initPlanPage() {
 
   await loadInterventions();
   initPlanForm();
+  initScenarioComparison();
   await loadPlansTracker();
 }
 
@@ -913,7 +1098,7 @@ function getCurrentExploreFilters() {
   const category = document.getElementById('category')?.value;
 
   const filters = {};
-  if (zone) filters.zones = [zone];
+  if (zone && zone !== 'ALL') filters.zones = [zone];
   if (source) filters.source = source;
   if (timeWindow) filters.time_window = timeWindow;
   if (category) filters.categories = [category];

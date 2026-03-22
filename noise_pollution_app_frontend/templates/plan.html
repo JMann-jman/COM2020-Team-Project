@@ -28,7 +28,7 @@
       <div>
         <div class="h6 mb-1">Transparent impact model</div>
         <div class="muted small">
-          Expected impact is a simple range (dB reduction) seeded for demo and refined in Sprint 2.
+          Expected impact is a simple range (dB reduction) seeded for demo.
           This is not an ML prediction.
         </div>
       </div>
@@ -123,6 +123,58 @@
             Values are explainable ranges (not ML predictions) used to guide planning choices.
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card app-card mt-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="h6 mb-1">Scenario comparison</div>
+          <div class="muted small">Build and compare at least 3 scenarios (A, B, C) by cost, expected impact, and coverage.</div>
+        </div>
+        <span class="badge text-bg-light">Planner tool</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-4">
+          <label class="form-label fw-semibold" for="scenarioAPlans">Scenario A plans</label>
+          <input class="form-control form-control-sm mb-2" id="scenarioASearch" type="search" placeholder="Search plans in Scenario A">
+          <select class="form-select" id="scenarioAPlans" multiple size="6" aria-label="Scenario A plan selection"></select>
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label fw-semibold" for="scenarioBPlans">Scenario B plans</label>
+          <input class="form-control form-control-sm mb-2" id="scenarioBSearch" type="search" placeholder="Search plans in Scenario B">
+          <select class="form-select" id="scenarioBPlans" multiple size="6" aria-label="Scenario B plan selection"></select>
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label fw-semibold" for="scenarioCPlans">Scenario C plans</label>
+          <input class="form-control form-control-sm mb-2" id="scenarioCSearch" type="search" placeholder="Search plans in Scenario C">
+          <select class="form-select" id="scenarioCPlans" multiple size="6" aria-label="Scenario C plan selection"></select>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-outline-dark btn-pill" type="button" id="compareScenariosBtn">
+          <i class="bi bi-diagram-3 me-1"></i>Compare scenarios
+        </button>
+      </div>
+
+      <div class="alert d-none mt-3" id="scenarioCompareResult" role="status"></div>
+      <div class="table-responsive mt-2 d-none" id="scenarioCompareTableWrap">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr class="small text-muted">
+              <th>Scenario</th>
+              <th>Plans</th>
+              <th>Total cost</th>
+              <th>Expected impact</th>
+              <th>Coverage</th>
+            </tr>
+          </thead>
+          <tbody id="scenarioCompareTable"></tbody>
+        </table>
       </div>
     </div>
   </div>
