@@ -1,13 +1,13 @@
 hotspot_id,zone_id,time_window,severity_score,rationale
-H01,Z09,day,62.0,Based on sensor trend
-H02,Z07,day,60.2,Based on sensor trend
-H03,Z06,day,59.3,Based on sensor trend
-H04,Z11,day,58.7,Based on sensor trend
-H05,Z05,day,58.0,Based on sensor trend
-H06,Z01,day,57.6,Based on sensor trend
-H07,Z02,day,57.1,Based on sensor trend
-H08,Z08,day,56.9,Based on sensor trend
-H09,Z10,day,54.6,Based on sensor trend
-H10,Z03,day,53.6,Based on sensor trend
-H11,Z12,day,51.9,Based on sensor trend
-H12,Z04,day,51.1,Based on sensor trend
+H01,Z04,night,111.1,Based on sensor trend and 20 validated reports
+H02,Z11,morning,103.7,Based on sensor trend and 15 validated reports
+H03,Z09,morning,95.0,Based on sensor trend and 11 validated reports
+H04,Z03,night,92.6,Based on sensor trend and 13 validated reports
+H05,Z07,night,90.2,Based on sensor trend and 10 validated reports
+H06,Z08,night,89.9,Based on sensor trend and 11 validated reports
+H07,Z10,afternoon,87.6,Based on sensor trend and 11 validated reports
+H08,Z05,afternoon,85.0,Based on sensor trend and 9 validated reports
+H09,Z02,night,84.1,Based on sensor trend and 9 validated reports
+H10,Z01,evening,81.6,Based on sensor trend and 8 validated reports
+H11,Z06,evening,77.3,Based on sensor trend and 6 validated reports
+H12,Z12,night,69.9,Based on sensor trend and 6 validated reports

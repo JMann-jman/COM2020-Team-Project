@@ -11,5 +11,6 @@ app = create_app()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() in {'1', 'true', 'yes', 'on'}
-    port = int(os.getenv('BACKEND_PORT', '5001'))
-    app.run(debug=debug_mode, port=port)
+    # Prefer cloud-assigned PORT (e.g., Render), with local fallback.
+    port = int(os.getenv('PORT', os.getenv('BACKEND_PORT', '5001')))
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)

@@ -338,3 +338,6 @@ MOD00336,REP00002,invalid,Valid and relevant,2026-03-20T14:15:39Z
 MOD00337,REP00003,duplicate,Matches existing report (same zone + time),2026-03-20T14:26:37Z
 MOD00338,REP00004,duplicate,Matches existing report (same zone + time),2026-03-20T14:26:38Z
 MOD00339,REP00005,invalid,Insufficient information,2026-03-20T14:26:41Z
+MOD00340,REP00008,valid,Valid and relevant,2026-03-23T10:25:55Z
+MOD00341,REP00009,invalid,Insufficient information,2026-03-23T10:26:00Z
+MOD00342,REP00010,valid,Valid and relevant,2026-03-23T10:44:41Z

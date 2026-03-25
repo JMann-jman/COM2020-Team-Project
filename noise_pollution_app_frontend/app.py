@@ -43,5 +43,6 @@ def quest():
 
 if __name__ == "__main__":
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() in {"1", "true", "yes", "on"}
-    port = int(os.getenv("FRONTEND_PORT", "5000"))
-    app.run(debug=debug_mode, port=port, use_reloader=False)
+    # Prefer cloud-assigned PORT (e.g., Render), with local fallback.
+    port = int(os.getenv("PORT", os.getenv("FRONTEND_PORT", "5000")))
+    app.run(debug=debug_mode, host="0.0.0.0", port=port, use_reloader=False)
