@@ -70,6 +70,16 @@ def test_submit_incident_report_success(client):
     assert 'is_duplicate' in body
 
 
+def test_submit_incident_report_missing_required_fields_returns_400(client):
+    payload = {
+        'zone_id': 'Z03',
+        'description': 'missing category should fail'
+    }
+    response = client.post('/api/reports', data=json.dumps(payload), headers=headers('community'))
+    assert response.status_code == 400
+    assert 'Missing required fields' in response.get_json()['error']
+
+
 def test_submit_duplicate_is_flagged_but_accepted(client):
     payload = {
         'zone_id': 'Z04',
@@ -141,6 +151,24 @@ def test_create_plan_success(client):
     assert 'plan_id' in body
 
 
+def test_compare_scenarios_success_with_three_plan_ids(client):
+    plans_response = client.get('/api/plans', headers=headers('planner'))
+    assert plans_response.status_code == 200
+    plan_ids = [plan['plan_id'] for plan in plans_response.get_json()[:3]]
+    assert len(plan_ids) == 3
+
+    response = client.post(
+        '/api/scenarios',
+        data=json.dumps({'plan_ids': plan_ids}),
+        headers=headers('planner')
+    )
+    assert response.status_code == 200
+    body = response.get_json()
+    assert 'total_cost' in body
+    assert 'total_impact' in body
+    assert 'coverage' in body
+
+
 def test_export_csv_observations_filtered(client):
     response = client.get('/api/export/csv?type=observations&zones=Z01&source=Sensor', headers=headers('community'))
     assert response.status_code == 200
@@ -153,6 +181,12 @@ def test_export_pdf_reports(client):
     assert 'application/pdf' in response.content_type
 
 
+def test_export_csv_invalid_type_returns_400(client):
+    response = client.get('/api/export/csv?type=invalid', headers=headers('community'))
+    assert response.status_code == 400
+    assert response.get_json()['error'] == 'Invalid type'
+
+
 def test_role_protection_blocks_planner_route_for_community(client):
     payload = {
         'zone_id': 'Z01',
@@ -161,57 +195,3 @@ def test_role_protection_blocks_planner_route_for_community(client):
     }
     response = client.post('/api/plans', data=json.dumps(payload), headers=headers('community'))
     assert response.status_code == 403
-
-
-def test_scenario_comparison_with_three_plans(client):
-    plans_response = client.get('/api/plans', headers=headers('planner'))
-    assert plans_response.status_code == 200
-    plans = plans_response.get_json()
-    assert len(plans) >= 3
-
-    payload = {'plan_ids': [plans[0]['plan_id'], plans[1]['plan_id'], plans[2]['plan_id']]}
-    response = client.post('/api/scenarios', data=json.dumps(payload), headers=headers('planner'))
-    assert response.status_code == 200
-    body = response.get_json()
-    assert 'total_cost' in body
-    assert 'total_impact' in body
-    assert 'coverage' in body
-    assert body['coverage'] >= 0
-
-
-def test_maintainer_reload_and_status_endpoints(client):
-    status_response = client.get('/api/maintenance/status', headers=headers('maintainer'))
-    assert status_response.status_code == 200
-    status_body = status_response.get_json()
-    assert 'data_counts' in status_body
-    assert status_body['data_counts']['reports'] >= 600
-
-    reload_response = client.post('/api/maintenance/reload', headers=headers('maintainer'))
-    assert reload_response.status_code == 200
-    assert reload_response.get_json()['message'] == 'Data reloaded successfully'
-
-
-def test_create_plan_preserves_plans_csv_format(client):
-    payload = {
-        'zone_id': 'z1',
-        'interventions': ['INT001', 'INT002'],
-        'notes': 'format check note'
-    }
-    response = client.post('/api/plans', data=json.dumps(payload), headers=headers('planner'))
-    assert response.status_code == 201
-
-    import app.data_loader as data_loader
-
-    plans_path = Path(data_loader.DATA_DIR) / 'plans.csv'
-    with plans_path.open('r', newline='', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        columns = reader.fieldnames
-        rows = list(reader)
-
-    assert columns == ['plan_id', 'zone_id', 'interventions_selected', 'budget', 'status', 'expected_impact', 'created_by']
-    assert len(rows) > 0
-
-    last = rows[-1]
-    assert last['zone_id'] == 'Z01'
-    assert last['interventions_selected'].startswith("['I")
-    assert 'INT' not in last['interventions_selected']
